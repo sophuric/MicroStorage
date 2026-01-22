@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "sophstorage",
+  "version": "${mod_version}",
+  "name": "SophStorage",
+  "description": "Simple storage system mod",
+  "authors": [
+    "sophur"
+  ],
+  "contact": {
+    "sources": "https://github.com/sophuric/SophStorage"
+  },
+  "license": "MPL-2.0",
+  "icon": "assets/sophstorage/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "me.sophur.sophstorage.client.SophStorageClient"
+    ],
+    "main": [
+      "me.sophur.sophstorage.SophStorage"
+    ]
+  },
+  "mixins": [
+    "sophstorage.mixins.json",
+    {
+      "config": "sophstorage.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": ">=${fabric_api_version}",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=21",
+    "brrp_v1": ">=${brrp_version}"
+  }
+}
