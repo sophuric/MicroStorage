@@ -13,7 +13,6 @@ import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
-import java.util.function.Function;
 
 import static me.sophur.sophstorage.SophStorage.MOD_ID;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
@@ -62,11 +61,12 @@ public class Util {
 
     // https://wiki.fabricmc.net/tutorial:waterloggable
 
-    public static @NotNull FluidState getFluidState(BlockState state, Function<BlockState, FluidState> superFunc) {
-        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : superFunc.apply(state);
+    public static @NotNull FluidState getFluidState(BlockState blockState) {
+        return blockState.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : Fluids.EMPTY.defaultFluidState();
     }
 
     public static BlockState waterlogBlockState(BlockState blockState, BlockPlaceContext ctx) {
+        if (blockState == null) return null;
         return blockState.setValue(WATERLOGGED, ctx.getLevel().getFluidState(ctx.getClickedPos()).is(Fluids.WATER));
     }
 

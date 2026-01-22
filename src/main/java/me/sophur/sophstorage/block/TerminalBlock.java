@@ -6,12 +6,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -56,11 +58,6 @@ public class TerminalBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     @Override
-    protected @NotNull VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return Shapes.empty();
-    }
-
-    @Override
     protected @NotNull BlockState updateShape(BlockState blockState, Direction direction, BlockState neighborBlockState, LevelAccessor level, BlockPos blockPos, BlockPos neighborBlockPos) {
         Util.updateShapeWaterlogged(blockState, level, blockPos);
         return super.updateShape(blockState, direction, neighborBlockState, level, blockPos, neighborBlockPos);
@@ -70,5 +67,10 @@ public class TerminalBlock extends Block implements SimpleWaterloggedBlock {
     public @NotNull BlockState getStateForPlacement(BlockPlaceContext ctx) {
         BlockState blockState = defaultBlockState().setValue(DIRECTION, ctx.getClickedFace().getOpposite());
         return Util.waterlogBlockState(blockState, ctx);
+    }
+
+    @Override
+    protected @NotNull FluidState getFluidState(BlockState state) {
+        return Util.getFluidState(state);
     }
 }
