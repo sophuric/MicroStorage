@@ -1,30 +1,30 @@
 {
   "schemaVersion": 1,
-  "id": "sophstorage",
+  "id": "microstorage",
   "version": "${mod_version}",
-  "name": "SophStorage",
+  "name": "μStorage",
   "description": "Simple storage system mod",
   "authors": [
     "sophur"
   ],
   "contact": {
-    "sources": "https://github.com/sophuric/SophStorage"
+    "sources": "https://github.com/sophuric/MicroStorage"
   },
   "license": "MPL-2.0",
-  "icon": "assets/sophstorage/icon.png",
+  "icon": "assets/microstorage/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
-      "me.sophur.sophstorage.client.SophStorageClient"
+      "me.sophur.microstorage.client.MicroStorageClient"
     ],
     "main": [
-      "me.sophur.sophstorage.SophStorage"
+      "me.sophur.microstorage.MicroStorage"
     ]
   },
   "mixins": [
-    "sophstorage.mixins.json",
+    "microstorage.mixins.json",
     {
-      "config": "sophstorage.client.mixins.json",
+      "config": "microstorage.client.mixins.json",
       "environment": "client"
     }
   ],
