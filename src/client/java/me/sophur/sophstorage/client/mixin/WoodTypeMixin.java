@@ -1,6 +1,6 @@
 package me.sophur.sophstorage.client.mixin;
 
-import me.sophur.sophstorage.Blocks;
+import me.sophur.sophstorage.VariantTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,8 +13,12 @@ public class WoodTypeMixin {
     @Inject(method = "register", at = @At("RETURN"))
     private static void injectRegister(WoodType woodType, CallbackInfoReturnable<WoodType> cir) {
         Minecraft instance = Minecraft.getInstance();
-        //noinspection ConstantValue // removing this causes NPE
-        if (instance == null) return;
-        instance.submit(() -> Blocks.addWoodType(woodType));
+        //noinspection ConstantValue
+        if (instance == null) return; // removing this causes NPE, idk why
+        try {
+            instance.submit(() -> VariantTypes.WOOD_TYPE_VARIANT.addMore(woodType)).wait();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

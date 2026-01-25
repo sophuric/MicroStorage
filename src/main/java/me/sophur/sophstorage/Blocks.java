@@ -1,84 +1,76 @@
 package me.sophur.sophstorage;
 
 import me.sophur.sophstorage.block.*;
-import net.minecraft.core.Registry;
+import me.sophur.sophstorage.util.BlockUtil;
+import me.sophur.sophstorage.util.DataProvider;
+import me.sophur.sophstorage.util.Util;
+import me.sophur.sophstorage.util.VariantUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagBuilder;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.WoodType;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import static me.sophur.sophstorage.SophStorage.LOGGER;
-import static me.sophur.sophstorage.Util.*;
+import static me.sophur.sophstorage.VariantTypes.*;
+import static me.sophur.sophstorage.util.BlockUtil.register;
+import static me.sophur.sophstorage.util.Util.getModID;
 
 public class Blocks {
-    private Blocks() {
-    }
+    private static boolean init = false;
 
-    public static <T extends Block> BlockID<T> register(T block, ResourceLocation id) {
-        return register(block, id, true);
-    }
-
-    public static <T extends Block> BlockID<T> register(T block, ResourceLocation id, boolean shouldRegisterItem) {
-        block = Registry.register(BuiltInRegistries.BLOCK, id, block);
-
-        BlockItem blockItem = null;
-
-        if (shouldRegisterItem) {
-            var props = new Item.Properties();
-            blockItem = Registry.register(BuiltInRegistries.ITEM, id, new BlockItem(block, props));
-        }
-
-        return new BlockID<>(block, blockItem, id);
-    }
-
-    private static final Map<WoodType, WoodTypeBlocks> BLOCKS = new HashMap<>();
-
-    public static Map<WoodType, WoodTypeBlocks> getBlocks() {
-        return Map.copyOf(BLOCKS);
-    }
-
-    public record BlockID<T extends Block>(T block, BlockItem blockItem, ResourceLocation blockID) {
-        // useful after calling instanceof, in order to still have the BlockID for a subclass of the block
-        public <N extends T> BlockID<N> toSubclass(N newBlock) {
-            if (newBlock != block) throw new UnsupportedOperationException("newBlock is not the same as block");
-            return new BlockID<>(newBlock, blockItem, blockID);
-        }
-    }
-
-    public record WoodTypeBlocks(WoodType woodType, String baseID, List<BlockID<Block>> blocks) {
-    }
-
-    public static WoodTypeBlocks addWoodType(WoodType wood) {
-        if (!BLOCKS.containsKey(wood)) {
-            Optional<Block> optPlanksBlock = BuiltInRegistries.BLOCK.getOptional(ResourceLocation.parse(wood.name() + "_planks"));
-            if (optPlanksBlock.isEmpty()) {
-                LOGGER.warn("Couldn't find planks block for wood type: {}", wood.name());
-                LOGGER.warn("Consider making a bug report to SophStorage if you would like this wood type added");
-                return null;
-            }
-
-            Block planksBlock = optPlanksBlock.get();
-            ResourceLocation baseName = Util.getIDFromExistingID(wood.name());
-            BlockBehaviour.Properties blockProps = BlockBehaviour.Properties.ofFullCopy(planksBlock);
-
-            BLOCKS.put(wood, new WoodTypeBlocks(wood, baseName.getPath(), List.of(
-                    register(new TrimBlock(blockProps), addSuffix(baseName, "_trim")),
-                    register(new TerminalBlock(blockProps), addSuffix(baseName, "_terminal")),
-                    register(new InterfaceBlock(blockProps), addSuffix(baseName, "_interface"))
-            )));
-        }
-        return BLOCKS.get(wood);
-    }
+    public static VariantUtil.VariantEntrySet<InterfaceBlock> INTERFACE_BLOCKS;
+    public static VariantUtil.VariantEntrySet<TerminalBlock> TERMINAL_BLOCKS;
+    public static VariantUtil.VariantEntrySet<TrimBlock> TRIM_BLOCKS;
 
     public static void initialise() {
-        WoodType.values().forEach(Blocks::addWoodType);
+        if (init) return;
+        init = true;
+
+        INTERFACE_BLOCKS = register((variantEntrySet, variantSet, id) -> {
+            var planks = getPlanksBlock(variantSet.get(WOOD_TYPE_VARIANT));
+            if (planks == null) return null;
+            return new InterfaceBlock(BlockBehaviour.Properties.ofFullCopy(planks));
+        }, getModID("interface"), true, VariantTypes.WOOD_TYPE_VARIANT);
+
+        TERMINAL_BLOCKS = register((variantEntrySet, variantSet, id) -> {
+            var planks = getPlanksBlock(variantSet.get(WOOD_TYPE_VARIANT));
+            if (planks == null) return null;
+            return new TerminalBlock(BlockBehaviour.Properties.ofFullCopy(planks));
+        }, getModID("terminal"), true, VariantTypes.WOOD_TYPE_VARIANT);
+
+        TRIM_BLOCKS = register((variantEntrySet, variantSet, id) -> {
+            var planks = getPlanksBlock(variantSet.get(WOOD_TYPE_VARIANT));
+            if (planks == null) return null;
+            return new TrimBlock(BlockBehaviour.Properties.ofFullCopy(planks));
+        }, getModID("trim"), true, VariantTypes.WOOD_TYPE_VARIANT);
+
+        DataProvider.createData(INTERFACE_BLOCKS, SophStorage.pack);
+        DataProvider.createData(TERMINAL_BLOCKS, SophStorage.pack);
+        DataProvider.createData(TRIM_BLOCKS, SophStorage.pack);
+
+        // add block tags
+        blockTagBuilderMap.forEach(SophStorage.pack::addTag);
+    }
+
+    private static final Map<TagKey<Block>, TagBuilder> blockTagBuilderMap = new HashMap<>();
+
+    public static void addTagElement(TagKey<Block> blockTag, ResourceLocation elementLocation) {
+        getTag(blockTag).addElement(elementLocation);
+    }
+
+    public static TagBuilder getTag(TagKey<Block> blockTag) {
+        blockTagBuilderMap.putIfAbsent(blockTag, new TagBuilder());
+        return blockTagBuilderMap.get(blockTag);
+    }
+
+    public static Collection<VariantUtil.VariantEntrySet<? extends Block>> getAll() {
+        return List.of(INTERFACE_BLOCKS, TERMINAL_BLOCKS, TRIM_BLOCKS);
     }
 }

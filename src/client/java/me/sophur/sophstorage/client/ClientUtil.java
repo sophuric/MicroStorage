@@ -5,7 +5,7 @@ import net.minecraft.data.models.blockstates.Variant;
 import net.minecraft.data.models.blockstates.VariantProperties;
 import net.minecraft.resources.ResourceLocation;
 
-import static me.sophur.sophstorage.Util.*;
+import static me.sophur.sophstorage.util.Util.*;
 import static net.minecraft.data.models.blockstates.VariantProperties.*;
 
 public class ClientUtil {
@@ -29,7 +29,7 @@ public class ClientUtil {
     }
 
     public static ResourceLocation getItemModelID(String path) {
-        return getItemModelID(getID(path));
+        return getItemModelID(getModID(path));
     }
 
     public static ResourceLocation getBlockModelID(ResourceLocation location, String prefix, String suffix) {
@@ -45,7 +45,7 @@ public class ClientUtil {
     }
 
     public static ResourceLocation getBlockModelID(String path) {
-        return getBlockModelID(getID(path));
+        return getBlockModelID(getModID(path));
     }
 
     public static Variant cloneVariant(Variant v) {
