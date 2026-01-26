@@ -44,7 +44,7 @@ public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.C
     public TrimBlock(Properties properties, VariantUtil.VariantSet variantSet) {
         super(properties);
         BlockState blockState = defaultBlockState();
-        ConnectingBlockUtil.createDefaultBlockState(blockState);
+        blockState = ConnectingBlockUtil.createDefaultBlockState(blockState);
         registerDefaultState(blockState);
     }
 
@@ -60,14 +60,14 @@ public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.C
 
     @Override
     protected @NotNull BlockState updateShape(BlockState blockState, Direction direction, BlockState neighborBlockState, LevelAccessor level, BlockPos blockPos, BlockPos neighborBlockPos) {
-        ConnectingBlockUtil.updateShape(this, blockState, direction, neighborBlockState, level, blockPos, neighborBlockPos);
-        return super.updateShape(blockState, direction, neighborBlockState, level, blockPos, neighborBlockPos);
+        blockState = ConnectingBlockUtil.updateShape(this, blockState, direction, neighborBlockState, level, blockPos, neighborBlockPos);
+        return blockState;
     }
 
     @Override
     public @NotNull BlockState getStateForPlacement(BlockPlaceContext ctx) {
         BlockState blockState = defaultBlockState();
-        ConnectingBlockUtil.getStateForPlacement(this, blockState, ctx);
+        blockState = ConnectingBlockUtil.getStateForPlacement(this, blockState, ctx);
         return blockState;
     }
 

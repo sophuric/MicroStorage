@@ -6,6 +6,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import org.jetbrains.annotations.CheckReturnValue;
 import org.jetbrains.annotations.NotNull;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
@@ -16,13 +17,15 @@ public class WaterlogUtil {
 
     // https://wiki.fabricmc.net/tutorial:waterloggable
 
+    @CheckReturnValue
     public static @NotNull FluidState getFluidState(BlockState blockState) {
         return blockState.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : Fluids.EMPTY.defaultFluidState();
     }
 
+    @CheckReturnValue
     public static BlockState getStateForPlacement(BlockState blockState, BlockPlaceContext ctx) {
         if (blockState == null) return null;
-        blockState.setValue(WATERLOGGED, ctx.getLevel().getFluidState(ctx.getClickedPos()).is(Fluids.WATER));
+        blockState = blockState.setValue(WATERLOGGED, ctx.getLevel().getFluidState(ctx.getClickedPos()).is(Fluids.WATER));
         return blockState;
     }
 
