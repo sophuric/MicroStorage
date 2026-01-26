@@ -221,6 +221,17 @@ public class VariantUtil {
             int variantsLen = lengths.size();
             int[] variantIndices = new int[variantsLen];
             while (true) {
+                // map the array of indices to the list of variants
+                VariantSet variantSet = new VariantSet(IntStream.range(0, variantsLen)
+                        .mapToObj(index -> variants.get(index).get(variantIndices[index])).collect(Collectors.toList()));
+
+                // skip this current variant set if it doesn't contain the new variant types
+                if (filterVariants == null || filterVariants.stream().anyMatch(filterVariants::contains)) {
+                    addEntry(variantSet);
+                    ++entriesLooped;
+                }
+
+                // increment
                 int i;
                 for (i = variantsLen - 1; i >= 0; --i) {
                     // increment last index
@@ -231,15 +242,6 @@ public class VariantUtil {
                 }
                 if (i == -1) return entriesLooped; // finished
 
-                // map the array of indices to the list of variants
-                VariantSet variantSet = new VariantSet(IntStream.range(0, variantsLen)
-                        .mapToObj(index -> variants.get(index).get(variantIndices[index])).collect(Collectors.toList()));
-
-                // skip this current variant set as it doesn't contain the new variant types
-                if (filterVariants != null && filterVariants.stream().noneMatch(filterVariants::contains)) continue;
-
-                addEntry(variantSet);
-                ++entriesLooped;
             }
         }
 
