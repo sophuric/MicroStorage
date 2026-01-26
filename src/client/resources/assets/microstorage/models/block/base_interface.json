@@ -1,9 +1,9 @@
 {
 	"format_version": "1.21.11",
 	"credit": "Made with Blockbench",
+	"parent": "block/block",
 	"textures": {
 		"0": "#glass",
-		"1": "#planks",
 		"2": "block/iron_block",
 		"particle": "#glass"
 	},
@@ -174,17 +174,17 @@
 			}
 		},
 		{
-			"name": "middle",
+			"name": "connector-middle",
 			"from": [6, 6, 6],
 			"to": [10, 10, 10],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 8]},
 			"faces": {
-				"north": {"uv": [6, 6, 10, 10], "texture": "#1"},
-				"east": {"uv": [6, 6, 10, 10], "texture": "#1"},
-				"south": {"uv": [6, 6, 10, 10], "texture": "#1"},
-				"west": {"uv": [6, 6, 10, 10], "texture": "#1"},
-				"up": {"uv": [6, 6, 10, 10], "texture": "#1"},
-				"down": {"uv": [6, 6, 10, 10], "texture": "#1"}
+				"north": {"uv": [6, 6, 10, 10], "texture": "#2"},
+				"east": {"uv": [6, 6, 10, 10], "texture": "#2"},
+				"south": {"uv": [6, 6, 10, 10], "texture": "#2"},
+				"west": {"uv": [6, 6, 10, 10], "texture": "#2"},
+				"up": {"uv": [6, 6, 10, 10], "texture": "#2"},
+				"down": {"uv": [6, 6, 10, 10], "texture": "#2"}
 			}
 		}
 	],
@@ -195,6 +195,7 @@
 			"origin": [0, 0, 0],
 			"color": 6,
 			"children": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-		}
+		},
+		13
 	]
 }

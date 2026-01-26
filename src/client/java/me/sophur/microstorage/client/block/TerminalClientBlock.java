@@ -27,7 +27,8 @@ public class TerminalClientBlock extends ClientEntry<TerminalBlock> {
         return addSuffix(id, isOpen ? "_open" : "_close");
     }
 
-    private static final ResourceLocation terminalBlockModel = getBlockModelID("terminal");
+    private final static String TYPE = "terminal";
+    private final static String PLANKS = "planks";
 
     @Override
     public void initialise(RuntimeResourcePack pack, Collection<VariantUtil.VariantEntrySet<TerminalBlock>> blockVariants) {
@@ -41,19 +42,16 @@ public class TerminalClientBlock extends ClientEntry<TerminalBlock> {
             BlockRenderLayerMap.INSTANCE.putBlock(block, RenderType.translucent());
 
             // add item model
-            pack.addModel(getItemModelID(id),
-                    ModelJsonBuilder.create(getItemModelID("terminal")).addTexture("planks", planksTexture));
+            pack.addModel(getItemModelID(id), ModelJsonBuilder.create(getItemModelID(TYPE)).addTexture(PLANKS, planksTexture));
 
             // create terminal model with planks texture
-            pack.addModel(getBlockModelID(id),
-                    ModelJsonBuilder.create(terminalBlockModel)
-                            .addTexture("planks", planksTexture));
+            pack.addModel(getBlockModelID(id), ModelJsonBuilder.create(getBlockModelID(TYPE)).addTexture(PLANKS, planksTexture));
 
             for (boolean isOpen : List.of(false, true)) {
                 // create opened/closed model
                 pack.addModel(getBlockModelID(addOpenCloseSuffix(id, isOpen)),
-                        ModelJsonBuilder.create(addOpenCloseSuffix(terminalBlockModel, isOpen))
-                                .addTexture("planks", planksTexture));
+                        ModelJsonBuilder.create(addOpenCloseSuffix(getBlockModelID(TYPE), isOpen))
+                                .addTexture(PLANKS, planksTexture));
             }
 
             MultiPartGenerator blockState = MultiPartGenerator.multiPart(block);

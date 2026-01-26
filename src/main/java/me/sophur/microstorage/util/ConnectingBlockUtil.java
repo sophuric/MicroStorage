@@ -54,7 +54,8 @@ public class ConnectingBlockUtil {
 
     public interface ConnectingBlock {
         default boolean canConnect(BlockState blockState, Direction direction, BlockState neighborBlockState, LevelAccessor level, BlockPos blockPos, BlockPos neighborBlockPos) {
-            return blockState.getBlock() instanceof ConnectingBlock;
+            return false;
+            // return blockState.getBlock() instanceof ConnectingBlock;
         }
     }
 }

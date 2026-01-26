@@ -23,6 +23,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -40,6 +41,9 @@ import pers.solid.brrp.v1.api.RuntimeResourcePack;
 import java.util.EnumMap;
 import java.util.Map;
 
+import static me.sophur.microstorage.Blocks.*;
+import static me.sophur.microstorage.VariantTypes.WOOD_TYPE_VARIANT;
+import static me.sophur.microstorage.VariantTypes.getPlanksID;
 import static me.sophur.microstorage.util.Util.getModID;
 import static net.minecraft.data.recipes.RecipeProvider.has;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
@@ -48,17 +52,25 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
     public static final EnumProperty<Direction> DIRECTION = EnumProperty.create("direction", Direction.class, BlockStateProperties.FACING.getPossibleValues());
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
 
-    public TerminalBlock(Properties properties) {
+    private final VariantUtil.VariantSet variantSet;
+
+    public TerminalBlock(Properties properties, VariantUtil.VariantSet variantSet) {
         super(properties);
+        this.variantSet = variantSet;
         registerDefaultState(defaultBlockState()
                 .setValue(DIRECTION, Direction.NORTH)
                 .setValue(OPEN, false)
                 .setValue(WATERLOGGED, false));
     }
 
+    public TerminalBlock(VariantUtil.VariantSet variantSet) {
+        // copy planks block
+        this(BlockBehaviour.Properties.ofFullCopy(Util.getBlock(getPlanksID(variantSet.get(WOOD_TYPE_VARIANT)))), variantSet);
+    }
+
     @Override
     protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(TerminalBlock::new);
+        return simpleCodec((properties) -> new TerminalBlock(properties, variantSet));
     }
 
     @Override
@@ -110,6 +122,7 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
     private BaseContainerBlockEntity getContainer(BlockState blockState, BlockGetter level, BlockPos pos) {
         BlockPos containerPos = pos.offset(blockState.getValue(DIRECTION).getNormal());
         BlockEntity entity = level.getBlockEntity(containerPos);
+        if (entity instanceof TerminalBlockEntity) return null; // explicitly prevent itself
         if (entity instanceof BaseContainerBlockEntity container) return container;
         return null;
     }
@@ -144,17 +157,16 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
     @Override
     public void perItem(VariantUtil.VariantEntrySet<TerminalBlock> variantEntrySet, VariantUtil.VariantSet variantSet, RuntimeResourcePack pack) {
         // create recipe
-        ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, this)
+        addRecipe(pack, ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, this)
                 .define('R', Items.REDSTONE)
                 .define('H', Items.HOPPER)
-                .define('P', VariantTypes.getPlanksItem(variantSet.get(VariantTypes.WOOD_TYPE_VARIANT)))
+                .define('P', Util.getItem(VariantTypes.getPlanksID(variantSet.get(VariantTypes.WOOD_TYPE_VARIANT))))
                 .pattern("RHR")
                 .pattern("PPP")
-                .unlockedBy("has_hopper", has(Items.HOPPER))
-                .save(pack.getRecipeExporter());
+                .unlockedBy("has_hopper", has(Items.HOPPER)), this);
 
-        pack.getBlockLootTableGenerator().dropSelf(this);
-        me.sophur.microstorage.Blocks.addTagElement(BlockTags.MINEABLE_WITH_AXE, Util.getID(this));
-        me.sophur.microstorage.Blocks.addTagElement(blockTag, Util.getID(this));
+        addBlockDrop(pack, this, v -> v.createSingleItemTable(this));
+        addTagElement(BlockTags.MINEABLE_WITH_AXE, Util.getID(this));
+        addTagElement(blockTag, Util.getID(this));
     }
 }

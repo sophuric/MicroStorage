@@ -16,7 +16,9 @@ public class WoodTypeMixin {
         //noinspection ConstantValue
         if (instance == null) return; // removing this causes NPE, idk why
         try {
-            instance.submit(() -> VariantTypes.WOOD_TYPE_VARIANT.addMore(woodType)).wait();
+            instance.submit(() -> {
+                if (VariantTypes.WOOD_TYPE_VARIANT != null) VariantTypes.WOOD_TYPE_VARIANT.addMore(woodType);
+            }).wait();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

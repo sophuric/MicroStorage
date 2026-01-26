@@ -1,20 +1,24 @@
 package me.sophur.microstorage.util;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static me.sophur.microstorage.MicroStorage.MOD_ID;
+import static net.minecraft.data.recipes.RecipeProvider.has;
 
 public class Util {
     private Util() {
@@ -99,6 +103,11 @@ public class Util {
         return BuiltInRegistries.ITEM.getKey(item);
     }
 
+    // rename to avoid possible mixup, since Block implements ItemLike
+    public static ResourceLocation getItemID(ItemLike item) {
+        return getID(item.asItem());
+    }
+
     public static ResourceLocation addPrefixSuffix(ResourceLocation location, String prefix, String suffix) {
         return ResourceLocation.fromNamespaceAndPath(location.getNamespace(), prefix + location.getPath() + suffix);
     }
@@ -109,29 +118,6 @@ public class Util {
 
     public static ResourceLocation addPrefix(ResourceLocation location, String prefix) {
         return addPrefixSuffix(location, prefix, "");
-    }
-
-    // loop the union of variants of multiple entry sets
-    public static <T> void loopVariantEntrySets(BiConsumer<VariantUtil.VariantSet, ? super T> consumer, Collection<VariantUtil.VariantEntrySet<? extends T>> variantEntrySets) {
-        ArrayList<VariantUtil.VariantType<?>> allVariantTypes = variantEntrySets.stream()
-                .collect(ArrayList::new, (variantTypes, variantEntrySet) ->
-                        variantEntrySet.getVariantTypes().forEach(variantType -> {
-                            // ensure no duplicates
-                            if (!variantTypes.contains(variantType)) variantTypes.add(variantType);
-                        }), ArrayList::addAll);
-
-        VariantUtil.VariantSet.loopVariants(allVariantTypes, variantSet ->
-                variantEntrySets.forEach((variantEntrySet) -> {
-                    // get subset of allVariantTypes that has all of variantEntrySet
-                    VariantUtil.VariantSet subset = new VariantUtil.VariantSet(variantSet.stream().filter(variant ->
-                            variantEntrySet.getVariantTypes().contains(variant.type)).toList());
-                    consumer.accept(subset, variantEntrySet.get(subset));
-                }));
-    }
-
-    @SafeVarargs
-    public static <T> void loopVariantEntrySets(BiConsumer<VariantUtil.VariantSet, ? super T> consumer, VariantUtil.VariantEntrySet<? extends T>... variantEntrySets) {
-        loopVariantEntrySets(consumer, Arrays.stream(variantEntrySets).toList());
     }
 
     @SuppressWarnings("unchecked")
@@ -145,4 +131,17 @@ public class Util {
         if (dividend < 0) dividend += divisor; // wraps number around to always be positive
         return dividend;
     }
+
+    public static RecipeBuilder recipeSurround8(RecipeCategory category, ItemLike input, ItemLike dye, ItemLike output) {
+        // similar to VanillaRecipeProvider::stainedGlassFromGlassAndDye
+        return ShapedRecipeBuilder.shaped(category, output, 8)
+                .define('#', input)
+                .define('X', dye)
+                .pattern("###")
+                .pattern("#X#")
+                .pattern("###")
+                .group("stained_glass")
+                .unlockedBy("has_glass", has(input));
+    }
+
 }

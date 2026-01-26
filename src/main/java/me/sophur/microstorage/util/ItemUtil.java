@@ -17,15 +17,17 @@ public class ItemUtil {
     }
 
     public static <T extends Item> VariantUtil.VariantEntrySet<T> register(Util.TriFunction<VariantUtil.VariantEntrySet<T>, VariantUtil.VariantSet, ResourceLocation, T> itemFactory, ResourceLocation baseID, Collection<VariantUtil.VariantType<?>> variants) {
-        return new VariantUtil.VariantEntrySet<>(baseID, (var, variantSet) -> {
-            ResourceLocation id = var.getID(variantSet);
+        VariantUtil.VariantEntrySet<T> v = new VariantUtil.VariantEntrySet<>(baseID, (variantEntrySet, variantSet) -> {
+            ResourceLocation id = variantEntrySet.getID(variantSet);
 
-            T item = itemFactory.apply(var, variantSet, id);
+            T item = itemFactory.apply(variantEntrySet, variantSet, id);
             if (item == null) return null;
 
             item = Registry.register(BuiltInRegistries.ITEM, id, item);
 
             return item;
         }, variants);
+        v.registerWithVariantTypes();
+        return v;
     }
 }

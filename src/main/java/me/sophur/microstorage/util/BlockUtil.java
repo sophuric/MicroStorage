@@ -22,7 +22,7 @@ public class BlockUtil {
     }
 
     public static <T extends Block> VariantEntrySet<T> register(TriFunction<VariantEntrySet<T>, VariantUtil.VariantSet, ResourceLocation, T> blockFactory, ResourceLocation baseID, boolean shouldRegisterItem, Collection<VariantType<?>> variants) {
-        return new VariantEntrySet<>(baseID, (variantEntrySet, variantSet) -> {
+        VariantEntrySet<T> v = new VariantEntrySet<>(baseID, (variantEntrySet, variantSet) -> {
             ResourceLocation id = variantEntrySet.getID(variantSet);
 
             T block = blockFactory.apply(variantEntrySet, variantSet, id);
@@ -37,5 +37,7 @@ public class BlockUtil {
 
             return block;
         }, variants);
+        v.registerWithVariantTypes();
+        return v;
     }
 }

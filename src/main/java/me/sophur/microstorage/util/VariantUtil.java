@@ -23,15 +23,28 @@ public class VariantUtil {
         }
 
         public String getName() {
+            if (type == null) return null;
             return type.getName(variant);
         }
 
         public Ingredient getIngredient() {
+            if (type == null) return null;
             return type.getIngredient(variant);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Variant<?> variant1)) return false;
+            return Objects.equals(type, variant1.type) && Objects.equals(variant, variant1.variant);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(type, variant);
         }
     }
 
-    // wrapper type
+    // wrapper type, there is one of these per block/item/etc
     public static class VariantSet extends ArrayList<Variant<?>> {
         public VariantSet(Variant<?>... variantSet) {
             this(Arrays.stream(variantSet).toList());
@@ -46,6 +59,10 @@ public class VariantUtil {
                 consumer.accept(variantSet);
                 return null;
             }, variantTypes);
+        }
+
+        public final <U> boolean hasVariant(VariantType<U> variantType) {
+            return this.stream().anyMatch(v -> v.type == variantType);
         }
 
         @SuppressWarnings("unchecked")
@@ -69,7 +86,11 @@ public class VariantUtil {
     }
 
     public static final class VariantType<T> {
-        public final Class<T> clazz;
+        private final Class<T> variantClass;
+
+        public Class<T> getVariantClass() {
+            return variantClass;
+        }
 
         // allows for easy creating new ones and easy calling getName and getVariants
 
@@ -80,18 +101,22 @@ public class VariantUtil {
         private final Map<Variant<T>, Ingredient> ingredientCache = new HashMap<>();
         private final Map<T, Variant<T>> variantsCache = new HashMap<>();
 
-        public VariantType(Class<T> clazz, Function<T, String> getName,
+        public VariantType(Class<T> variantClass, Function<T, String> getName,
                            T[] variants, Function<T, Ingredient> getIngredient) {
-            this(clazz, getName, Arrays.stream(variants).toList(), getIngredient);
+            this(variantClass, getName, Arrays.stream(variants).toList(), getIngredient);
         }
 
-        public VariantType(Class<T> clazz, Function<T, String> getName,
+        public VariantType(Class<T> variantClass, Function<T, String> getName,
                            List<T> variants, Function<T, Ingredient> getIngredient) {
-            this.clazz = clazz;
+            this.variantClass = variantClass;
             getNameInternal = getName;
             getIngredientInternal = getIngredient;
 
             addNew(variants);
+        }
+
+        public VariantType(VariantType<T> variantType) {
+            this(variantType.variantClass, variantType.getNameInternal, variantType.getActualVariants(), variantType.getIngredientInternal);
         }
 
         private void addNew(Collection<T> variants) {
@@ -124,6 +149,10 @@ public class VariantUtil {
             return variantsCache.values().stream().toList();
         }
 
+        public List<T> getActualVariants() {
+            return variantsCache.values().stream().map(v -> v.variant).toList();
+        }
+
         public void registerEntry(VariantEntrySet<?> variant) {
             registeredEntries.add(variant);
         }
@@ -147,6 +176,7 @@ public class VariantUtil {
     @SuppressWarnings("UnusedReturnValue")
     public static final class VariantEntrySet<T> {
         public ResourceLocation getID(VariantSet variantSet) {
+            if (variantSet == NULL_VARIANT_SET) return baseID;
             String variantID = variantSet.stream().map(Variant::getName).collect(Collectors.joining("_"));
             return Util.addPrefix(baseID, variantID + "_");
         }
@@ -189,13 +219,15 @@ public class VariantUtil {
             entries = new HashMap<>();
             this.populateFunction = populateFunction;
 
-            // register this variety of blocks, items, etc. with the variants
-            variantTypes.forEach(v -> v.registerEntry(this));
-
             populateEntries(null);
         }
 
-        private static final VariantSet NULL_VARIANT = new VariantSet(List.of(new Variant<>(null, null)));
+        public void registerWithVariantTypes() {
+            // register this variety of blocks, items, etc. with the variants
+            variantTypes.forEach(v -> v.registerEntry(this));
+        }
+
+        private static final VariantSet NULL_VARIANT_SET = new VariantSet(List.of());
 
         private boolean addEntry(VariantSet variantSet) {
             if (entries.containsKey(variantSet)) return false;
@@ -206,11 +238,11 @@ public class VariantUtil {
         private int populateEntries(Set<?> filterVariants) {
             // no variants, populate only once
             if (this.variantTypes.isEmpty()) {
-                addEntry(NULL_VARIANT);
+                addEntry(NULL_VARIANT_SET);
                 return 1;
             }
 
-            if (entries.containsKey(NULL_VARIANT))
+            if (entries.containsKey(NULL_VARIANT_SET))
                 throw new UnsupportedOperationException("Cannot add variant types after it has already been populated with no variant types");
 
             // loop blocks with n-depth, where n is the number of variants
@@ -251,6 +283,44 @@ public class VariantUtil {
 
         public Collection<T> getValues() {
             return getEntries().values();
+        }
+
+        // loop the union of variants of multiple entry sets
+        // this is useful if you want to loop VariantEntrySet-major order instead of VariantSet-major order
+        // i.e. oak planks, oak stairs, oak slab, birch planks, birch stairs birch slab, rather than
+        // oak planks, birch planks, oak stairs, birch stairs, oak slab, birch slab
+        public static <T> void loopVariantEntrySets(BiConsumer<VariantUtil.VariantSet, ? super T> consumer, Collection<VariantUtil.VariantEntrySet<? extends T>> variantEntrySets) {
+            ArrayList<VariantEntrySet<? extends T>> variantEntrySetsReversed = new ArrayList<>(variantEntrySets);
+            Collections.reverse(variantEntrySetsReversed);
+
+            Set<VariantUtil.VariantType<?>> allVariantTypes = variantEntrySetsReversed.stream()
+                    .collect(LinkedHashSet::new, (variantTypes, variantEntrySet) ->
+                            variantTypes.addAll(variantEntrySet.getVariantTypes()), LinkedHashSet::addAll);
+
+            VariantUtil.VariantSet.loopVariants(allVariantTypes, variantSet ->
+                    variantEntrySets.forEach((variantEntrySet) -> {
+                        // get subset of allVariantTypes that has all of variantEntrySet
+                        VariantUtil.VariantSet subset = new VariantUtil.VariantSet(variantSet.stream().filter(variant ->
+                                variantEntrySet.getVariantTypes().contains(variant.type)).toList());
+                        var entry = variantEntrySet.get(subset);
+                        if (entry != null) consumer.accept(subset, entry);
+                    }));
+        }
+
+        @SafeVarargs
+        public static <T> void loopVariantEntrySets(BiConsumer<VariantUtil.VariantSet, ? super T> consumer, VariantUtil.VariantEntrySet<? extends T>... variantEntrySets) {
+            loopVariantEntrySets(consumer, Arrays.stream(variantEntrySets).toList());
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof VariantEntrySet<?> that)) return false;
+            return Objects.equals(variantTypes, that.variantTypes) && Objects.equals(baseID, that.baseID) && Objects.equals(entries, that.entries);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(variantTypes, baseID, entries);
         }
     }
 }
