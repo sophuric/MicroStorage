@@ -1,6 +1,7 @@
 package me.sophur.microstorage.block;
 
 import com.mojang.serialization.MapCodec;
+import me.sophur.microstorage.Blocks;
 import me.sophur.microstorage.VariantTypes;
 import me.sophur.microstorage.blockentity.InterfaceBlockEntity;
 import me.sophur.microstorage.util.*;
@@ -82,8 +83,6 @@ public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUt
 
     @Override
     public void perItem(VariantUtil.VariantEntrySet<InterfaceBlock> variantEntrySet, VariantUtil.VariantSet variantSet, RuntimeResourcePack pack) {
-        // TODO: group recipes for each types in the recipe book
-
         DyeColor dye = null;
         if (variantSet.hasVariant(DYE_COLOR_VARIANT)) dye = variantSet.get(DYE_COLOR_VARIANT);
         Item glassItem = Util.getItem(VariantTypes.getGlassID(dye));
@@ -98,12 +97,15 @@ public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUt
                 .pattern("ICI")
                 .pattern("GRG")
                 .pattern("IHI")
+                .group("microstorage_interface")
                 .unlockedBy("has_hopper", has(Items.HOPPER)), this);
 
         // like stained-glass recipe
         if (dye != null)
-            addRecipe(pack, Util.recipeSurround8(RecipeCategory.REDSTONE, Util.getItem(VariantTypes.getGlassID(null)),
-                    Util.getItem(VariantTypes.getDyeID(dye)), this), this, "glass");
+            addRecipe(pack,
+                    Util.recipeSurround8(RecipeCategory.REDSTONE, Blocks.INTERFACE_BLOCKS.getOnly(),
+                            Util.getItem(VariantTypes.getDyeID(dye)), this).group("microstorage_interface"),
+                    this, "glass");
 
         addBlockDrop(pack, this, v -> v.createSingleItemTable(this));
         addTagElement(BlockTags.MINEABLE_WITH_PICKAXE, Util.getID(this));

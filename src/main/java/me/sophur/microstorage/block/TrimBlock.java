@@ -1,5 +1,6 @@
 package me.sophur.microstorage.block;
 
+import me.sophur.microstorage.Blocks;
 import me.sophur.microstorage.VariantTypes;
 import me.sophur.microstorage.util.*;
 import net.minecraft.core.BlockPos;
@@ -87,12 +88,15 @@ public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.C
                 .pattern("I I")
                 .pattern("GRG")
                 .pattern("I I")
+                .group("microstorage_trim")
                 .unlockedBy("has_hopper", has(Items.HOPPER)), this);
 
         // like stained-glass recipe
         if (dye != null)
-            addRecipe(pack, Util.recipeSurround8(RecipeCategory.REDSTONE, Util.getItem(VariantTypes.getGlassID(null)),
-                    Util.getItem(VariantTypes.getDyeID(dye)), this), this, "glass");
+            addRecipe(pack,
+                    Util.recipeSurround8(RecipeCategory.REDSTONE, TRIM_BLOCKS.getOnly(),
+                            Util.getItem(VariantTypes.getDyeID(dye)), this).group("microstorage_trim"),
+                    this, "glass");
 
         addBlockDrop(pack, this, v -> v.createSingleItemTable(this));
         addTagElement(BlockTags.MINEABLE_WITH_PICKAXE, Util.getID(this));

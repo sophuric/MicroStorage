@@ -163,6 +163,7 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
                 .define('P', Util.getItem(VariantTypes.getPlanksID(variantSet.get(VariantTypes.WOOD_TYPE_VARIANT))))
                 .pattern("RHR")
                 .pattern("PPP")
+                .group("microstorage_terminal")
                 .unlockedBy("has_hopper", has(Items.HOPPER)), this);
 
         addBlockDrop(pack, this, v -> v.createSingleItemTable(this));

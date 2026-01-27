@@ -322,5 +322,14 @@ public class VariantUtil {
         public int hashCode() {
             return Objects.hash(variantTypes, baseID, entries);
         }
+
+        // gets the only entry, fails if there is not exactly one entry
+        public T getOnly() {
+            Collection<T> entries = getValues();
+            if (entries.isEmpty()) throw new NoSuchElementException("There are no entries in this VariantEntrySet");
+            if (entries.size() != 1)
+                throw new IllegalStateException("There are multiple entries in this VariantEntrySet");
+            return entries.stream().findFirst().get();
+        }
     }
 }
