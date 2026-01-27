@@ -1,5 +1,7 @@
 package me.sophur.microstorage.util;
 
+import me.sophur.microstorage.blockentity.TerminalBlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
@@ -8,8 +10,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,6 +35,13 @@ public class Util {
             if (!set.add(t)) return true;
         }
         return false;
+    }
+
+    public static BaseContainerBlockEntity getContainer(BlockGetter level, BlockPos blockPos) {
+        BlockEntity entity = level.getBlockEntity(blockPos);
+        if (entity instanceof TerminalBlockEntity) return null; // explicitly prevent itself
+        if (entity instanceof BaseContainerBlockEntity container) return container;
+        return null;
     }
 
     @FunctionalInterface

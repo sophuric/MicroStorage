@@ -118,12 +118,9 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
         return SHAPE_MAP.get(blockState.getValue(DIRECTION));
     }
 
-    private BaseContainerBlockEntity getContainer(BlockState blockState, BlockGetter level, BlockPos pos) {
-        BlockPos containerPos = pos.offset(blockState.getValue(DIRECTION).getNormal());
-        BlockEntity entity = level.getBlockEntity(containerPos);
-        if (entity instanceof TerminalBlockEntity) return null; // explicitly prevent itself
-        if (entity instanceof BaseContainerBlockEntity container) return container;
-        return null;
+    public static BaseContainerBlockEntity getContainer(BlockState ownBlockState, BlockGetter level, BlockPos ownBlockPos) {
+        BlockPos containerPos = ownBlockPos.offset(ownBlockState.getValue(TerminalBlock.DIRECTION).getNormal());
+        return Util.getContainer(level, containerPos);
     }
 
     @Override

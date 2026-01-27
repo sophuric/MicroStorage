@@ -124,4 +124,10 @@ public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUt
     protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
         return true;
     }
+
+    @Override
+    public boolean canConnect(BlockState blockState, Direction direction, BlockState neighborBlockState, LevelAccessor level, BlockPos blockPos, BlockPos neighborBlockPos) {
+        if (Util.getContainer(level, neighborBlockPos) != null) return true;
+        return ConnectingBlockUtil.ConnectingBlock.super.canConnect(blockState, direction, neighborBlockState, level, blockPos, neighborBlockPos);
+    }
 }

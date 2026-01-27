@@ -97,4 +97,10 @@ public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.C
         addTagElement(BlockTags.MINEABLE_WITH_PICKAXE, Util.getID(this));
         addTagElement(blockTag, Util.getID(this));
     }
+
+    @Override
+    public boolean canConnect(BlockState blockState, Direction direction, BlockState neighborBlockState, LevelAccessor level, BlockPos blockPos, BlockPos neighborBlockPos) {
+        if (Util.getContainer(level, neighborBlockPos) != null) return true;
+        return ConnectingBlockUtil.ConnectingBlock.super.canConnect(blockState, direction, neighborBlockState, level, blockPos, neighborBlockPos);
+    }
 }
