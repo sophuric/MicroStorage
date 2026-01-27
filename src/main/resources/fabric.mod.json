@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "microstorage",
+  "id": "${mod_id}",
   "version": "${mod_version}",
   "name": "μStorage",
   "description": "Simple storage system mod",

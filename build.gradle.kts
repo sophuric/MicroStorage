@@ -1,11 +1,13 @@
 plugins {
     java
     alias(libs.plugins.fabric.loom)
+    alias(libs.plugins.minotaur)
 }
 
+val modName = property("mod.name").toString()
 val modId = property("mod.id").toString()
 val modGroup = property("mod.group").toString()
-version = property("mod.version").toString()
+val version = property("mod.version").toString()
 
 base.archivesName = "${modId}-${version}"
 
@@ -100,4 +102,18 @@ tasks.withType<JavaCompile> {
     options.release = 21
 }
 
-tasks.jar { from("LICENSE") { rename { "${it}_${base.archivesName}" } } }
+tasks.jar { from("LICENSE") { rename { "${it}_${base.archivesName.get()}" } } }
+
+modrinth {
+    token.set(System.getenv("MODRINTH_TOKEN"))
+    projectId.set("microstorage")
+    versionNumber.set(version)
+    versionType.set("release")
+    uploadFile.set(tasks.remapJar)
+    loaders.add("fabric")
+    dependencies {
+        required.project("fabric-api")
+        required.project("brrp")
+    }
+    syncBodyFrom = rootProject.file("README.md").readText()
+}
