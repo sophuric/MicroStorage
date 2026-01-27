@@ -1,6 +1,5 @@
 package me.sophur.microstorage.block;
 
-import me.sophur.microstorage.Blocks;
 import me.sophur.microstorage.VariantTypes;
 import me.sophur.microstorage.util.*;
 import net.minecraft.core.BlockPos;
@@ -9,8 +8,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.*;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.LevelAccessor;
@@ -76,15 +73,13 @@ public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.C
 
     @Override
     public void perItem(VariantUtil.VariantEntrySet<TrimBlock> variantEntrySet, VariantUtil.VariantSet variantSet, RuntimeResourcePack pack) {
-        DyeColor dye = null;
-        if (variantSet.hasVariant(DYE_COLOR_VARIANT)) dye = variantSet.get(DYE_COLOR_VARIANT);
-        Item glassItem = Util.getItem(VariantTypes.getGlassID(dye));
+        var dye = variantSet.getOrNull(DYE_COLOR_VARIANT);
 
         // create recipe
         addRecipe(pack, ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, this, 2)
                 .define('R', Items.REDSTONE)
                 .define('I', Items.IRON_INGOT)
-                .define('G', glassItem)
+                .define('G', Util.getItem(VariantTypes.getGlassID(dye)))
                 .pattern("I I")
                 .pattern("GRG")
                 .pattern("I I")

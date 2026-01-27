@@ -76,6 +76,11 @@ public class VariantUtil {
             return this.getVariant(variantType).variant;
         }
 
+        public final <U> U getOrNull(VariantType<U> variantType) {
+            if (hasVariant(variantType)) return get(variantType);
+            return null;
+        }
+
         public final <U> String getName(VariantType<U> variantType) {
             return this.getVariant(variantType).getName();
         }

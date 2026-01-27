@@ -12,8 +12,6 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -83,9 +81,7 @@ public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUt
 
     @Override
     public void perItem(VariantUtil.VariantEntrySet<InterfaceBlock> variantEntrySet, VariantUtil.VariantSet variantSet, RuntimeResourcePack pack) {
-        DyeColor dye = null;
-        if (variantSet.hasVariant(DYE_COLOR_VARIANT)) dye = variantSet.get(DYE_COLOR_VARIANT);
-        Item glassItem = Util.getItem(VariantTypes.getGlassID(dye));
+        var dye = variantSet.getOrNull(DYE_COLOR_VARIANT);
 
         // create recipe
         addRecipe(pack, ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, this, 2)
@@ -93,7 +89,7 @@ public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUt
                 .define('R', Items.REDSTONE)
                 .define('H', Items.HOPPER)
                 .define('I', Items.IRON_INGOT)
-                .define('G', glassItem)
+                .define('G', Util.getItem(VariantTypes.getGlassID(dye)))
                 .pattern("ICI")
                 .pattern("GRG")
                 .pattern("IHI")

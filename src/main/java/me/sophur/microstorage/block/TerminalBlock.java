@@ -1,7 +1,6 @@
 package me.sophur.microstorage.block;
 
 import com.mojang.serialization.MapCodec;
-import me.sophur.microstorage.VariantTypes;
 import me.sophur.microstorage.blockentity.TerminalBlockEntity;
 import me.sophur.microstorage.util.*;
 import net.minecraft.core.BlockPos;
@@ -160,7 +159,7 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
         addRecipe(pack, ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, this)
                 .define('R', Items.REDSTONE)
                 .define('H', Items.HOPPER)
-                .define('P', Util.getItem(VariantTypes.getPlanksID(variantSet.get(VariantTypes.WOOD_TYPE_VARIANT))))
+                .define('P', Util.getItem(getPlanksID(variantSet.get(WOOD_TYPE_VARIANT))))
                 .pattern("RHR")
                 .pattern("PPP")
                 .group("microstorage_terminal")

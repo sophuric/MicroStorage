@@ -1,7 +1,5 @@
 package me.sophur.microstorage.util;
 
-import me.sophur.microstorage.block.InterfaceBlock;
-import me.sophur.microstorage.block.TrimBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
