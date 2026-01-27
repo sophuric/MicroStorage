@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.*;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Items;
@@ -39,15 +40,25 @@ public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.C
                     .isSuffocating(net.minecraft.world.level.block.Blocks::never)
                     .isViewBlocking(net.minecraft.world.level.block.Blocks::never);
 
-    public TrimBlock(Properties properties, VariantUtil.VariantSet variantSet) {
+    private final VariantUtil.VariantEntrySet<TrimBlock> variantEntrySet;
+    private final VariantUtil.VariantSet variantSet;
+
+    public TrimBlock(Properties properties, VariantUtil.VariantEntrySet<TrimBlock> variantEntrySet, VariantUtil.VariantSet variantSet) {
         super(properties);
+        this.variantEntrySet = variantEntrySet;
+        this.variantSet = variantSet;
         BlockState blockState = defaultBlockState();
         blockState = ConnectingBlockUtil.createDefaultBlockState(blockState);
         registerDefaultState(blockState);
     }
 
-    public TrimBlock(VariantUtil.VariantSet variantSet) {
-        this(PROPERTIES, variantSet);
+    public TrimBlock(VariantUtil.VariantEntrySet<TrimBlock> variantEntrySet, VariantUtil.VariantSet variantSet) {
+        this(PROPERTIES, variantEntrySet, variantSet);
+    }
+
+    @Override
+    public @NotNull MutableComponent getName() {
+        return variantEntrySet.getComponent("block", variantSet);
     }
 
     @Override

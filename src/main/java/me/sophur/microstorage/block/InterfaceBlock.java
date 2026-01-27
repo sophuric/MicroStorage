@@ -10,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Items;
@@ -34,23 +35,30 @@ import static me.sophur.microstorage.util.Util.getModID;
 import static net.minecraft.data.recipes.RecipeProvider.*;
 
 public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUtil.ConnectingBlock, DataProvider<InterfaceBlock> {
+    private final VariantUtil.VariantEntrySet<InterfaceBlock> variantEntrySet;
     private final VariantUtil.VariantSet variantSet;
 
-    public InterfaceBlock(Properties properties, VariantUtil.VariantSet variantSet) {
+    public InterfaceBlock(Properties properties, VariantUtil.VariantEntrySet<InterfaceBlock> variantEntrySet, VariantUtil.VariantSet variantSet) {
         super(properties);
+        this.variantEntrySet = variantEntrySet;
         this.variantSet = variantSet;
         BlockState blockState = defaultBlockState();
         blockState = ConnectingBlockUtil.createDefaultBlockState(blockState);
         registerDefaultState(blockState);
     }
 
-    public InterfaceBlock(VariantUtil.VariantSet variantSet) {
-        this(TrimBlock.PROPERTIES, variantSet);
+    public InterfaceBlock(VariantUtil.VariantEntrySet<InterfaceBlock> variantEntrySet, VariantUtil.VariantSet variantSet) {
+        this(TrimBlock.PROPERTIES, variantEntrySet, variantSet);
+    }
+
+    @Override
+    public @NotNull MutableComponent getName() {
+        return variantEntrySet.getComponent("block", variantSet);
     }
 
     @Override
     protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec((properties) -> new TerminalBlock(properties, variantSet));
+        return simpleCodec((properties) -> new InterfaceBlock(properties, variantEntrySet, variantSet));
     }
 
     @Override
@@ -109,6 +117,11 @@ public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUt
     }
 
     // from TransparentBlock
+
+    @Override
+    protected boolean skipRendering(BlockState state, BlockState adjacentState, Direction direction) {
+        return adjacentState.is(this) || super.skipRendering(state, adjacentState, direction);
+    }
 
     @Override
     protected @NotNull VoxelShape getVisualShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {

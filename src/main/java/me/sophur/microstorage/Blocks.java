@@ -40,15 +40,15 @@ public class Blocks {
         init = true;
 
         TERMINAL_BLOCKS = BlockUtil.register((variantEntrySet, variantSet, id) ->
-                new TerminalBlock(variantSet), getModID("terminal"), true, WOOD_TYPE_VARIANT);
+                new TerminalBlock(variantEntrySet, variantSet), getModID("terminal"), true, WOOD_TYPE_VARIANT);
         INTERFACE_BLOCKS = BlockUtil.register((variantEntrySet, variantSet, id) ->
-                new InterfaceBlock(variantSet), getModID("interface"), true);
+                new InterfaceBlock(variantEntrySet, variantSet), getModID("interface"), true);
         TRIM_BLOCKS = BlockUtil.register((variantEntrySet, variantSet, id) ->
-                new TrimBlock(variantSet), getModID("trim"), true);
+                new TrimBlock(variantEntrySet, variantSet), getModID("trim"), true);
         STAINED_INTERFACE_BLOCKS = BlockUtil.register((variantEntrySet, variantSet, id) ->
-                new InterfaceBlock(variantSet), getModID("stained_interface"), true, DYE_COLOR_VARIANT);
+                new InterfaceBlock(variantEntrySet, variantSet), getModID("stained_interface"), true, DYE_COLOR_VARIANT);
         STAINED_TRIM_BLOCKS = BlockUtil.register((variantEntrySet, variantSet, id) ->
-                new TrimBlock(variantSet), getModID("stained_trim"), true, DYE_COLOR_VARIANT);
+                new TrimBlock(variantEntrySet, variantSet), getModID("stained_trim"), true, DYE_COLOR_VARIANT);
     }
 
     public static void createData(RuntimeResourcePack pack) {

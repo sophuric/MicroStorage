@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
@@ -51,10 +52,12 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
     public static final EnumProperty<Direction> DIRECTION = EnumProperty.create("direction", Direction.class, BlockStateProperties.FACING.getPossibleValues());
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
 
+    private final VariantUtil.VariantEntrySet<TerminalBlock> variantEntrySet;
     private final VariantUtil.VariantSet variantSet;
 
-    public TerminalBlock(Properties properties, VariantUtil.VariantSet variantSet) {
+    public TerminalBlock(Properties properties, VariantUtil.VariantEntrySet<TerminalBlock> variantEntrySet, VariantUtil.VariantSet variantSet) {
         super(properties);
+        this.variantEntrySet = variantEntrySet;
         this.variantSet = variantSet;
         registerDefaultState(defaultBlockState()
                 .setValue(DIRECTION, Direction.NORTH)
@@ -62,14 +65,19 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
                 .setValue(WATERLOGGED, false));
     }
 
-    public TerminalBlock(VariantUtil.VariantSet variantSet) {
+    public TerminalBlock(VariantUtil.VariantEntrySet<TerminalBlock> variantEntrySet, VariantUtil.VariantSet variantSet) {
         // copy planks block
-        this(BlockBehaviour.Properties.ofFullCopy(Util.getBlock(getPlanksID(variantSet.get(WOOD_TYPE_VARIANT)))), variantSet);
+        this(BlockBehaviour.Properties.ofFullCopy(Util.getBlock(getPlanksID(variantSet.get(WOOD_TYPE_VARIANT)))), variantEntrySet, variantSet);
+    }
+
+    @Override
+    public @NotNull MutableComponent getName() {
+        return variantEntrySet.getComponent("block", variantSet);
     }
 
     @Override
     protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec((properties) -> new TerminalBlock(properties, variantSet));
+        return simpleCodec((properties) -> new TerminalBlock(properties, variantEntrySet, variantSet));
     }
 
     @Override

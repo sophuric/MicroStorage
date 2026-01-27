@@ -42,6 +42,7 @@ public class TrimInterfaceClientBlock<T extends Block> extends ClientEntry<T> {
 
             // allow translucent pixels in texture
             BlockRenderLayerMap.INSTANCE.putBlock(block, RenderType.translucent());
+            // FIXME: fix graphical transparency issues with the item model
 
             // add item model
             pack.addModel(getItemModelID(id), ModelJsonBuilder.create(getItemModelID(baseID)).addTexture(GLASS, glassTexture));

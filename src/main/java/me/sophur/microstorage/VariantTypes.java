@@ -34,13 +34,13 @@ public class VariantTypes {
         if (init) return;
         init = true;
 
-        WOOD_TYPE_VARIANT = new VariantUtil.VariantType<>(WoodType.class, WoodType::name, WoodType.values().toList(),
-                wood -> Ingredient.of(Util.getItem(wood.name() + "_planks")));
+        WOOD_TYPE_VARIANT = new VariantUtil.VariantType<>("wood_type", WoodType.class, WoodType::name,
+                WoodType.values().toList(), wood -> Ingredient.of(Util.getItem(wood.name() + "_planks")));
 
-        DYE_COLOR_VARIANT = new VariantUtil.VariantType<>(DyeColor.class, DyeColor::getName, DyeColor.values(),
-                dye -> Ingredient.of(Util.getItem(dye.name() + "_dye")));
+        DYE_COLOR_VARIANT = new VariantUtil.VariantType<>("dye_color", DyeColor.class, DyeColor::getName,
+                DyeColor.values(), dye -> Ingredient.of(Util.getItem(dye.name() + "_dye")));
 
-        TIER_VARIANT = new VariantUtil.VariantType<>(Tiers.class, t -> t.name().toLowerCase(), Tiers.values(),
-                Tiers::getRepairIngredient);
+        TIER_VARIANT = new VariantUtil.VariantType<>("tier", Tiers.class, t -> t.name().toLowerCase(),
+                Tiers.values(), Tiers::getRepairIngredient);
     }
 }

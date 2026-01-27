@@ -4,10 +4,13 @@ import me.sophur.microstorage.util.VariantUtil.VariantType;
 import me.sophur.microstorage.util.VariantUtil.VariantEntrySet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -32,7 +35,14 @@ public class BlockUtil {
 
             if (shouldRegisterItem) {
                 var props = new Item.Properties();
-                Registry.register(BuiltInRegistries.ITEM, id, new BlockItem(block, props));
+                T finalBlock = block; // Java shenanigans
+                Registry.register(BuiltInRegistries.ITEM, id, new BlockItem(finalBlock, props) {
+                    @Override
+                    public @NotNull Component getName(ItemStack stack) {
+                        // allows overriding the getName method
+                        return finalBlock.getName();
+                    }
+                });
             }
 
             return block;

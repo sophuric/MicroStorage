@@ -1,5 +1,7 @@
 package me.sophur.microstorage.util;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -8,6 +10,8 @@ import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static me.sophur.microstorage.util.Util.getModID;
 
 public class VariantUtil {
     VariantUtil() {
@@ -25,6 +29,14 @@ public class VariantUtil {
         public String getName() {
             if (type == null) return null;
             return type.getName(variant);
+        }
+
+        public String getTranslationKey() {
+            return net.minecraft.Util.makeDescriptionId("variant", getModID(type.name + "." + getName()));
+        }
+
+        public MutableComponent getComponent() {
+            return Component.translatable(getTranslationKey());
         }
 
         public Ingredient getIngredient() {
@@ -91,11 +103,9 @@ public class VariantUtil {
     }
 
     public static final class VariantType<T> {
-        private final Class<T> variantClass;
+        public final Class<T> variantClass;
 
-        public Class<T> getVariantClass() {
-            return variantClass;
-        }
+        public final String name;
 
         // allows for easy creating new ones and easy calling getName and getVariants
 
@@ -106,13 +116,14 @@ public class VariantUtil {
         private final Map<Variant<T>, Ingredient> ingredientCache = new HashMap<>();
         private final Map<T, Variant<T>> variantsCache = new HashMap<>();
 
-        public VariantType(Class<T> variantClass, Function<T, String> getName,
+        public VariantType(String name, Class<T> variantClass, Function<T, String> getName,
                            T[] variants, Function<T, Ingredient> getIngredient) {
-            this(variantClass, getName, Arrays.stream(variants).toList(), getIngredient);
+            this(name, variantClass, getName, Arrays.stream(variants).toList(), getIngredient);
         }
 
-        public VariantType(Class<T> variantClass, Function<T, String> getName,
+        public VariantType(String name, Class<T> variantClass, Function<T, String> getName,
                            List<T> variants, Function<T, Ingredient> getIngredient) {
+            this.name = name;
             this.variantClass = variantClass;
             getNameInternal = getName;
             getIngredientInternal = getIngredient;
@@ -121,7 +132,7 @@ public class VariantUtil {
         }
 
         public VariantType(VariantType<T> variantType) {
-            this(variantType.variantClass, variantType.getNameInternal, variantType.getActualVariants(), variantType.getIngredientInternal);
+            this(variantType.name, variantType.variantClass, variantType.getNameInternal, variantType.getActualVariants(), variantType.getIngredientInternal);
         }
 
         private void addNew(Collection<T> variants) {
@@ -335,6 +346,17 @@ public class VariantUtil {
             if (entries.size() != 1)
                 throw new IllegalStateException("There are multiple entries in this VariantEntrySet");
             return entries.stream().findFirst().get();
+        }
+
+        public String getBaseTranslationKey(String type) {
+            return net.minecraft.Util.makeDescriptionId(type, baseID);
+        }
+
+        public MutableComponent getComponent(String type, VariantSet variantSet) {
+            // convert VariantSet to Component for translations
+            return Component.translatable(getBaseTranslationKey(type),
+                    (Object[]) Util.toArray(MutableComponent.class,
+                            variantSet.stream().map(Variant::getComponent).toList()));
         }
     }
 }
