@@ -2,10 +2,15 @@ package me.sophur.microstorage.util;
 
 import me.sophur.microstorage.blockentity.TerminalBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -42,6 +47,29 @@ public class Util {
         if (entity instanceof TerminalBlockEntity) return null; // explicitly prevent itself
         if (entity instanceof BaseContainerBlockEntity container) return container;
         return null;
+    }
+
+    private static final HashMap<Object, MutableComponent> nameCache = new HashMap<>();
+
+    private static <T> @NotNull MutableComponent getName(T entry, String type, String translationKey, VariantUtil.VariantEntrySet<T> variantEntrySet, VariantUtil.VariantSet variantSet) {
+        if (!nameCache.containsKey(entry)) {
+            MutableComponent fallback = variantEntrySet.getComponent(type, variantSet);
+            // get the translation name directly, otherwise fallback to dynamically creating the translation from the variant set
+            MutableComponent output = MutableComponent.create(new TranslatableContentsFallback(
+                    translationKey, fallback, TranslatableContents.NO_ARGS));
+            nameCache.put(entry, output);
+        }
+        return nameCache.get(entry).copy();
+    }
+
+    public static <T extends Item> @NotNull MutableComponent getItemName(T item, VariantUtil.VariantEntrySet<T> variantEntrySet, VariantUtil.VariantSet variantSet) {
+        if (Util.getID(item) == null) return Component.empty();
+        return getName(item, "item", item.getDescriptionId(), variantEntrySet, variantSet);
+    }
+
+    public static <T extends Block> @NotNull MutableComponent getBlockName(T block, VariantUtil.VariantEntrySet<T> variantEntrySet, VariantUtil.VariantSet variantSet) {
+        if (Util.getID(block) == null) return Component.empty();
+        return getName(block, "block", block.getDescriptionId(), variantEntrySet, variantSet);
     }
 
     @FunctionalInterface
@@ -103,16 +131,21 @@ public class Util {
         return null;
     }
 
+    private static <T> ResourceLocation getID(Registry<T> registry, T entry) {
+        // DefaultedMappedRegistry doesn't return default for getResourceKey
+        return registry.getResourceKey(entry).map(ResourceKey::location).orElse(null);
+    }
+
     public static ResourceLocation getID(BlockState blockState) {
         return getID(blockState.getBlock());
     }
 
     public static ResourceLocation getID(Block block) {
-        return BuiltInRegistries.BLOCK.getKey(block);
+        return getID(BuiltInRegistries.BLOCK, block);
     }
 
     public static ResourceLocation getID(Item item) {
-        return BuiltInRegistries.ITEM.getKey(item);
+        return getID(BuiltInRegistries.ITEM, item);
     }
 
     // rename to avoid possible mixup, since Block implements ItemLike

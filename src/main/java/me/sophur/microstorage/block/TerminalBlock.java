@@ -72,7 +72,7 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
 
     @Override
     public @NotNull MutableComponent getName() {
-        return variantEntrySet.getComponent("block", variantSet);
+        return Util.getBlockName(this, variantEntrySet, variantSet);
     }
 
     @Override

@@ -14,6 +14,8 @@ base.archivesName = "${modId}-${version}"
 loom {
     splitEnvironmentSourceSets()
 
+    accessWidenerPath = file("src/main/resources/microstorage.classtweaker")
+
     mods.create(modId) {
         sourceSet(sourceSets.getByName("main"))
         sourceSet(sourceSets.getByName("client"))

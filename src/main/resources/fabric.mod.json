@@ -21,6 +21,7 @@
       "me.sophur.microstorage.MicroStorage"
     ]
   },
+  "accessWideners": "microstorage.classtweaker",
   "mixins": [
     "microstorage.mixins.json",
     {

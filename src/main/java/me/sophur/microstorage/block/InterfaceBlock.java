@@ -10,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -53,7 +54,7 @@ public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUt
 
     @Override
     public @NotNull MutableComponent getName() {
-        return variantEntrySet.getComponent("block", variantSet);
+        return Util.getBlockName(this, variantEntrySet, variantSet);
     }
 
     @Override

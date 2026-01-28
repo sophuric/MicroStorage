@@ -27,6 +27,7 @@ import static me.sophur.microstorage.VariantTypes.*;
 import static me.sophur.microstorage.util.Util.getModID;
 import static net.minecraft.data.recipes.RecipeProvider.has;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.ConnectingBlock, DataProvider<TrimBlock> {
     // mainly copy of glass block
     public static final BlockBehaviour.Properties PROPERTIES =
@@ -58,7 +59,7 @@ public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.C
 
     @Override
     public @NotNull MutableComponent getName() {
-        return variantEntrySet.getComponent("block", variantSet);
+        return Util.getBlockName(this, variantEntrySet, variantSet);
     }
 
     @Override

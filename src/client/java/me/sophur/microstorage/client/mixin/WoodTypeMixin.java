@@ -1,6 +1,7 @@
 package me.sophur.microstorage.client.mixin;
 
 import me.sophur.microstorage.VariantTypes;
+import net.fabricmc.fabric.mixin.itemgroup.client.CreativeInventoryScreenMixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,6 +17,7 @@ public class WoodTypeMixin {
         //noinspection ConstantValue
         if (instance == null) return; // removing this causes NPE, idk why
         try {
+            // prevent from running on the wrong thread
             instance.submit(() -> {
                 if (VariantTypes.WOOD_TYPE_VARIANT != null) VariantTypes.WOOD_TYPE_VARIANT.addMore(woodType);
             }).wait();

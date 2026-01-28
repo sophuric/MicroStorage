@@ -1,0 +1,9 @@
+classTweaker v1 named
+accessible field net/minecraft/network/chat/contents/TranslatableContents ARG_CODEC Lcom/mojang/serialization/Codec;
+accessible method net/minecraft/network/chat/contents/TranslatableContents adjustArgs ([Ljava/lang/Object;)Ljava/util/Optional;
+accessible method net/minecraft/network/chat/contents/TranslatableContents adjustArgs (Ljava/util/Optional;)[Ljava/lang/Object;
+accessible field net/minecraft/network/chat/contents/TranslatableContents decomposedWith Lnet/minecraft/locale/Language;
+accessible method net/minecraft/network/chat/contents/TranslatableContents decomposeTemplate (Ljava/lang/String;Ljava/util/function/Consumer;)V
+accessible field net/minecraft/network/chat/contents/TranslatableContents decomposedParts Ljava/util/List;
+accessible field net/minecraft/network/chat/contents/TranslatableContents key Ljava/lang/String;
+accessible field net/minecraft/network/chat/contents/TranslatableContents args [Ljava/lang/Object;
