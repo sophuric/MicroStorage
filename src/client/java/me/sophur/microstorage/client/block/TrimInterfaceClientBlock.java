@@ -25,8 +25,6 @@ public class TrimInterfaceClientBlock<T extends Block> extends ClientEntry<T> {
     private static final ResourceLocation trimBlockModel = getBlockModelID("trim");
 
     private final String baseID;
-    private final static String GLASS = "glass";
-    private final static String CONNECTOR = "trim_connector";
 
     public TrimInterfaceClientBlock(String type) {
         this.baseID = "base_" + type; // allows choosing between trim and interface
@@ -45,10 +43,10 @@ public class TrimInterfaceClientBlock<T extends Block> extends ClientEntry<T> {
             // FIXME: fix graphical transparency issues with the item model
 
             // add item model
-            pack.addModel(getItemModelID(id), ModelJsonBuilder.create(getItemModelID(baseID)).addTexture(GLASS, glassTexture));
+            pack.addModel(getItemModelID(id), ModelJsonBuilder.create(getItemModelID(baseID)).addTexture("glass", glassTexture));
 
             // create trim/interface model with glass texture
-            pack.addModel(getBlockModelID(id), ModelJsonBuilder.create(getBlockModelID(baseID)).addTexture(GLASS, glassTexture));
+            pack.addModel(getBlockModelID(id), ModelJsonBuilder.create(getBlockModelID(baseID)).addTexture("glass", glassTexture));
 
             MultiPartGenerator blockState = MultiPartGenerator.multiPart(block);
 
@@ -56,7 +54,7 @@ public class TrimInterfaceClientBlock<T extends Block> extends ClientEntry<T> {
 
             // loop all directions
             ConnectingBlockUtil.DIRECTION_PROPERTIES.forEach((direction, prop) -> {
-                Variant variant = new Variant().with(MODEL, getBlockModelID(CONNECTOR));
+                Variant variant = new Variant().with(MODEL, getBlockModelID("trim_connector"));
                 rotateVariantFromNorth(variant, direction, true);
                 Condition.TerminalCondition cond = Condition.condition().term(prop, true);
                 blockState.with(cond, variant);

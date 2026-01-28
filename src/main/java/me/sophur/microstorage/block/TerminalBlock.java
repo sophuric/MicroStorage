@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
@@ -46,11 +47,12 @@ import static me.sophur.microstorage.VariantTypes.WOOD_TYPE_VARIANT;
 import static me.sophur.microstorage.VariantTypes.getPlanksID;
 import static me.sophur.microstorage.util.Util.getModID;
 import static net.minecraft.data.recipes.RecipeProvider.has;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, DataProvider<TerminalBlock>, VariantUtil.VariantSupplier<TerminalBlock> {
-    public static final EnumProperty<Direction> DIRECTION = EnumProperty.create("direction", Direction.class, BlockStateProperties.FACING.getPossibleValues());
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<AttachFace> FACE = BlockStateProperties.ATTACH_FACE;
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     private final VariantUtil.VariantEntrySet<TerminalBlock> variantEntrySet;
     private final VariantUtil.VariantSet variantSet;
@@ -60,7 +62,8 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
         this.variantEntrySet = variantEntrySet;
         this.variantSet = variantSet;
         registerDefaultState(defaultBlockState()
-                .setValue(DIRECTION, Direction.NORTH)
+                .setValue(FACING, Direction.NORTH)
+                .setValue(FACE, AttachFace.WALL)
                 .setValue(OPEN, false)
                 .setValue(WATERLOGGED, false));
     }
@@ -93,7 +96,7 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(DIRECTION, OPEN, WATERLOGGED);
+        builder.add(FACING, FACE, OPEN, WATERLOGGED);
     }
 
     @Override
@@ -121,13 +124,22 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
             Direction.SOUTH, Shapes.box(0, 0, 1 - THICKNESS, 1, 1, 1)
     ));
 
+    private static Direction getConnectedDirection(BlockState blockState) {
+        // from net.minecraft.world.level.block.FaceAttachedHorizontalDirectionalBlock::getConnectedDirection
+        return switch (blockState.getValue(FACE)) {
+            case CEILING -> Direction.UP;
+            case FLOOR -> Direction.DOWN;
+            default -> blockState.getValue(FACING);
+        };
+    }
+
     @Override
     protected @NotNull VoxelShape getShape(BlockState blockState, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE_MAP.get(blockState.getValue(DIRECTION));
+        return SHAPE_MAP.get(getConnectedDirection(blockState));
     }
 
     public static BaseContainerBlockEntity getContainer(BlockState ownBlockState, BlockGetter level, BlockPos ownBlockPos) {
-        BlockPos containerPos = ownBlockPos.offset(ownBlockState.getValue(TerminalBlock.DIRECTION).getNormal());
+        BlockPos containerPos = ownBlockPos.offset(getConnectedDirection(ownBlockState).getNormal());
         return Util.getContainer(level, containerPos);
     }
 
@@ -147,7 +159,17 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
 
     @Override
     public @NotNull BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        BlockState blockState = defaultBlockState().setValue(DIRECTION, ctx.getClickedFace().getOpposite());
+        BlockState blockState = defaultBlockState();
+        var clicked = ctx.getClickedFace();
+        if (clicked.getAxis() == Direction.Axis.Y) {
+            blockState = blockState
+                    .setValue(FACE, clicked == Direction.UP ? AttachFace.FLOOR : AttachFace.CEILING)
+                    .setValue(FACING, ctx.getHorizontalDirection());
+        } else {
+            blockState = blockState
+                    .setValue(FACE, AttachFace.WALL)
+                    .setValue(FACING, clicked.getOpposite());
+        }
         return WaterlogUtil.getStateForPlacement(blockState, ctx);
     }
 

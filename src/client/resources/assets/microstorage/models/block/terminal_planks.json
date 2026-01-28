@@ -9,15 +9,6 @@
 	},
 	"elements": [
 		{
-			"name": "terminal",
-			"from": [1, 8, 0],
-			"to": [15, 15, 1],
-			"rotation": {"angle": 0, "axis": "y", "origin": [1, -1, 0]},
-			"faces": {
-				"south": {"uv": [0, 0, 14, 7], "texture": "#2"}
-			}
-		},
-		{
 			"name": "right",
 			"from": [15, 0, 0],
 			"to": [16, 16, 2],
@@ -116,36 +107,11 @@
 			}
 		},
 		{
-			"name": "buttons",
-			"from": [12, 1, 1],
-			"to": [15, 7, 2],
-			"rotation": {"angle": 0, "axis": "y", "origin": [12, -9, 0]},
+			"name": "tray back dim",
+			"from": [1, 1, 1],
+			"to": [11, 7, 1],
 			"faces": {
-				"south": {"uv": [0, 10, 3, 16], "texture": "#2"}
-			}
-		},
-		{
-			"name": "handle",
-			"from": [2, 5, 2.5],
-			"to": [10, 6, 3.5],
-			"faces": {
-				"east": {"uv": [9, 8, 10, 9], "texture": "#2"},
-				"south": {"uv": [1, 8, 9, 9], "texture": "#2"},
-				"west": {"uv": [0, 8, 1, 9], "texture": "#2"},
-				"up": {"uv": [1, 7, 9, 8], "texture": "#2"},
-				"down": {"uv": [1, 9, 9, 10], "texture": "#2"}
-			}
-		},
-		{
-			"name": "tray",
-			"from": [1, 1, 2],
-			"to": [11, 7, 3],
-			"faces": {
-				"east": {"uv": [11, 9, 12, 15], "texture": "#1"},
-				"south": {"uv": [1, 9, 11, 15], "texture": "#1"},
-				"west": {"uv": [0, 9, 1, 15], "texture": "#1"},
-				"up": {"uv": [1, 8, 11, 9], "rotation": 180, "texture": "#1"},
-				"down": {"uv": [1, 15, 11, 16], "texture": "#1"}
+				"south": {"uv": [0, 7, 1, 8], "texture": "#2"}
 			}
 		}
 	],
@@ -193,12 +159,6 @@
 	},
 	"groups": [
 		{
-			"name": "main",
-			"origin": [7, 1, 9],
-			"color": 0,
-			"children": [0]
-		},
-		{
 			"name": "main planks",
 			"origin": [0, 0, 0],
 			"color": 0,
@@ -207,25 +167,13 @@
 					"name": "border",
 					"origin": [7, 1, 9],
 					"color": 0,
-					"children": [1, 2, 3, 4, 5]
+					"children": [0, 1, 2, 3, 4]
 				},
+				5,
 				6,
 				7,
-				8,
-				9
+				8
 			]
-		},
-		{
-			"name": "close",
-			"origin": [7, 1, 9],
-			"color": 0,
-			"children": [10, 11]
-		},
-		{
-			"name": "close planks",
-			"origin": [8, 8, 8],
-			"color": 7,
-			"children": [12]
 		}
 	]
 }

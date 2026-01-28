@@ -12,6 +12,7 @@ import net.minecraft.data.models.blockstates.Condition;
 import net.minecraft.data.models.blockstates.MultiPartGenerator;
 import net.minecraft.data.models.blockstates.Variant;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.state.properties.AttachFace;
 import pers.solid.brrp.v1.api.RuntimeResourcePack;
 import pers.solid.brrp.v1.model.ModelJsonBuilder;
 
@@ -27,9 +28,6 @@ public class TerminalClientBlock extends ClientEntry<TerminalBlock> {
         return addSuffix(id, isOpen ? "_open" : "_close");
     }
 
-    private final static String TYPE = "terminal";
-    private final static String PLANKS = "planks";
-
     @Override
     public void initialise(RuntimeResourcePack pack, Collection<VariantUtil.VariantEntrySet<TerminalBlock>> blockVariants) {
         blockVariants.forEach(variants -> variants.forEach((variantSet, block) -> {
@@ -42,38 +40,53 @@ public class TerminalClientBlock extends ClientEntry<TerminalBlock> {
             BlockRenderLayerMap.INSTANCE.putBlock(block, RenderType.translucent());
 
             // add item model
-            pack.addModel(getItemModelID(id), ModelJsonBuilder.create(getItemModelID(TYPE)).addTexture(PLANKS, planksTexture));
+            pack.addModel(getItemModelID(id), ModelJsonBuilder.create(getItemModelID("terminal")).addTexture("planks", planksTexture));
 
             // create terminal model with planks texture
-            pack.addModel(getBlockModelID(id), ModelJsonBuilder.create(getBlockModelID(TYPE)).addTexture(PLANKS, planksTexture));
+            // a separate model for the parts that use the planks texture allows us to have separate textures with/without UV-lock
+            pack.addModel(getBlockModelID(id), ModelJsonBuilder.create(getBlockModelID("terminal_planks")).addTexture("planks", planksTexture));
 
             for (boolean isOpen : List.of(false, true)) {
                 // create opened/closed model
                 pack.addModel(getBlockModelID(addOpenCloseSuffix(id, isOpen)),
-                        ModelJsonBuilder.create(addOpenCloseSuffix(getBlockModelID(TYPE), isOpen))
-                                .addTexture(PLANKS, planksTexture));
+                        ModelJsonBuilder.create(addOpenCloseSuffix(getBlockModelID("terminal_planks"), isOpen))
+                                .addTexture("planks", planksTexture));
             }
 
             MultiPartGenerator blockState = MultiPartGenerator.multiPart(block);
 
             // loop all directions
-            for (Direction direction : TerminalBlock.DIRECTION.getPossibleValues()) {
-                // create variant for this direction
-                Variant variant = new Variant().with(MODEL, getBlockModelID(id));
-                rotateVariantFromNorth(variant, direction, true);
-                Condition.TerminalCondition cond = Condition.condition().term(TerminalBlock.DIRECTION, direction);
-                blockState.with(cond, variant);
+            for (AttachFace face : TerminalBlock.FACE.getPossibleValues())
+                for (Direction facing : TerminalBlock.FACING.getPossibleValues()) {
+                    Condition.TerminalCondition cond = Condition.condition()
+                            .term(TerminalBlock.FACE, face)
+                            .term(TerminalBlock.FACING, facing);
 
-                // create variants for opened and closed
-                for (boolean isOpen : List.of(false, true)) {
-                    Variant variant2 = new Variant().with(MODEL, getBlockModelID(addOpenCloseSuffix(id, isOpen)));
-                    rotateVariantFromNorth(variant2, direction, true);
-                    Condition.TerminalCondition cond2 = Condition.condition()
-                            .term(TerminalBlock.DIRECTION, direction)
-                            .term(TerminalBlock.OPEN, isOpen);
-                    blockState.with(cond2, variant2);
+                    // create variant for this direction
+                    Variant variant = new Variant().with(MODEL, getBlockModelID(id));
+                    rotateVariantFromNorth(variant, face, facing, true);
+                    blockState.with(cond, variant);
+
+                    variant = new Variant().with(MODEL, getBlockModelID("terminal"));
+                    rotateVariantFromNorth(variant, face, facing, false);
+                    blockState.with(cond, variant);
+
+                    // create variants for opened and closed
+                    for (boolean isOpen : List.of(false, true)) {
+                        cond = Condition.condition()
+                                .term(TerminalBlock.FACE, face)
+                                .term(TerminalBlock.FACING, facing)
+                                .term(TerminalBlock.OPEN, isOpen);
+
+                        variant = new Variant().with(MODEL, addOpenCloseSuffix(getBlockModelID(id), isOpen));
+                        rotateVariantFromNorth(variant, face, facing, true);
+                        blockState.with(cond, variant);
+
+                        variant = new Variant().with(MODEL, addOpenCloseSuffix(getBlockModelID("terminal"), isOpen));
+                        rotateVariantFromNorth(variant, face, facing, false);
+                        blockState.with(cond, variant);
+                    }
                 }
-            }
 
             pack.addBlockState(id, blockState);
         }));
