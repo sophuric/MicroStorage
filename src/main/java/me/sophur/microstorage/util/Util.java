@@ -189,4 +189,8 @@ public class Util {
                 .unlockedBy("has_glass", has(input));
     }
 
+    @SafeVarargs
+    public static <T> Collection<T> concat(Collection<T>... collections) {
+        return Arrays.stream(collections).collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
+    }
 }

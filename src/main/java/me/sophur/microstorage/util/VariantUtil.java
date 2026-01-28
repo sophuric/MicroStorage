@@ -17,6 +17,11 @@ public class VariantUtil {
     VariantUtil() {
     }
 
+    public interface VariantSupplier<T> {
+        VariantEntrySet<T> getVariantEntrySet();
+        VariantSet getVariantSet();
+    }
+
     public static final class Variant<T> {
         public final VariantType<T> type;
         public final T variant;

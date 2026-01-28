@@ -10,7 +10,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -20,6 +19,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -35,7 +35,7 @@ import static me.sophur.microstorage.VariantTypes.DYE_COLOR_VARIANT;
 import static me.sophur.microstorage.util.Util.getModID;
 import static net.minecraft.data.recipes.RecipeProvider.*;
 
-public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUtil.ConnectingBlock, DataProvider<InterfaceBlock> {
+public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUtil.ConnectingBlock, DataProvider<InterfaceBlock>, VariantUtil.VariantSupplier<InterfaceBlock> {
     private final VariantUtil.VariantEntrySet<InterfaceBlock> variantEntrySet;
     private final VariantUtil.VariantSet variantSet;
 
@@ -65,6 +65,11 @@ public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUt
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new InterfaceBlockEntity(pos, state);
+    }
+
+    @Override
+    protected @NotNull RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @Override
@@ -120,11 +125,6 @@ public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUt
     // from TransparentBlock
 
     @Override
-    protected boolean skipRendering(BlockState state, BlockState adjacentState, Direction direction) {
-        return adjacentState.is(this) || super.skipRendering(state, adjacentState, direction);
-    }
-
-    @Override
     protected @NotNull VoxelShape getVisualShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return Shapes.empty();
     }
@@ -143,5 +143,20 @@ public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUt
     public boolean canConnect(BlockState blockState, Direction direction, BlockState neighborBlockState, LevelAccessor level, BlockPos blockPos, BlockPos neighborBlockPos) {
         if (Util.getContainer(level, neighborBlockPos) != null) return true;
         return ConnectingBlockUtil.ConnectingBlock.super.canConnect(blockState, direction, neighborBlockState, level, blockPos, neighborBlockPos);
+    }
+
+    @Override
+    protected boolean skipRendering(BlockState state, BlockState adjacentState, Direction direction) {
+        return TrimBlock.skipRenderingGlass(state, adjacentState, direction) || super.skipRendering(state, adjacentState, direction);
+    }
+
+    @Override
+    public VariantUtil.VariantEntrySet<InterfaceBlock> getVariantEntrySet() {
+        return variantEntrySet;
+    }
+
+    @Override
+    public VariantUtil.VariantSet getVariantSet() {
+        return variantSet;
     }
 }

@@ -4,6 +4,7 @@
   "package": "me.sophur.microstorage.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "HalfTransparentBlockMixin"
   ],
   "server": [
     "WoodTypeMixin"

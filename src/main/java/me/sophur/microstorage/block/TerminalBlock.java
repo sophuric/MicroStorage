@@ -48,7 +48,7 @@ import static me.sophur.microstorage.util.Util.getModID;
 import static net.minecraft.data.recipes.RecipeProvider.has;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, DataProvider<TerminalBlock> {
+public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, DataProvider<TerminalBlock>, VariantUtil.VariantSupplier<TerminalBlock> {
     public static final EnumProperty<Direction> DIRECTION = EnumProperty.create("direction", Direction.class, BlockStateProperties.FACING.getPossibleValues());
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
 
@@ -173,5 +173,15 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
         addBlockDrop(pack, this, v -> v.createSingleItemTable(this));
         addTagElement(BlockTags.MINEABLE_WITH_AXE, Util.getID(this));
         addTagElement(blockTag, Util.getID(this));
+    }
+
+    @Override
+    public VariantUtil.VariantEntrySet<TerminalBlock> getVariantEntrySet() {
+        return variantEntrySet;
+    }
+
+    @Override
+    public VariantUtil.VariantSet getVariantSet() {
+        return variantSet;
     }
 }

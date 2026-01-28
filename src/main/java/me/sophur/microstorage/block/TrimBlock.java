@@ -9,11 +9,13 @@ import net.minecraft.data.recipes.*;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StainedGlassBlock;
 import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,13 +24,17 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import org.jetbrains.annotations.NotNull;
 import pers.solid.brrp.v1.api.RuntimeResourcePack;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+
 import static me.sophur.microstorage.Blocks.*;
 import static me.sophur.microstorage.VariantTypes.*;
 import static me.sophur.microstorage.util.Util.getModID;
 import static net.minecraft.data.recipes.RecipeProvider.has;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.ConnectingBlock, DataProvider<TrimBlock> {
+public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.ConnectingBlock, DataProvider<TrimBlock>, VariantUtil.VariantSupplier<TrimBlock> {
     // mainly copy of glass block
     public static final BlockBehaviour.Properties PROPERTIES =
             BlockBehaviour.Properties.of()
@@ -114,5 +120,42 @@ public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.C
     public boolean canConnect(BlockState blockState, Direction direction, BlockState neighborBlockState, LevelAccessor level, BlockPos blockPos, BlockPos neighborBlockPos) {
         if (Util.getContainer(level, neighborBlockPos) != null) return true;
         return ConnectingBlockUtil.ConnectingBlock.super.canConnect(blockState, direction, neighborBlockState, level, blockPos, neighborBlockPos);
+    }
+
+    public static boolean skipRenderingGlass(VariantUtil.VariantSupplier<?> block, BlockState state, BlockState adjacentState, Direction direction) {
+        // prevent rendering connecting glass
+        Block adjacentBlock = adjacentState.getBlock();
+        for (VariantUtil.VariantEntrySet<?> blocks : List.of(
+                TRIM_BLOCKS,
+                STAINED_TRIM_BLOCKS,
+                INTERFACE_BLOCKS,
+                STAINED_INTERFACE_BLOCKS
+        )) {
+            // prevent rendering side if it is the same colour interface/trim
+            if (Objects.equals(adjacentBlock, blocks.get(block.getVariantSet()))) return true;
+        }
+        // prevent rendering side if it is the same colour glass block
+        var dye = block.getVariantSet().getOrNull(DYE_COLOR_VARIANT);
+        return Objects.equals(adjacentBlock, Util.getBlock(VariantTypes.getGlassID(dye)));
+    }
+
+    public static boolean skipRenderingGlass(BlockState state, BlockState adjacentState, Direction direction) {
+        if (!(state.getBlock() instanceof VariantUtil.VariantSupplier<?> block)) return false;
+        return skipRenderingGlass(block, state, adjacentState, direction);
+    }
+
+    @Override
+    protected boolean skipRendering(BlockState state, BlockState adjacentState, Direction direction) {
+        return skipRenderingGlass(state, adjacentState, direction) || super.skipRendering(state, adjacentState, direction);
+    }
+
+    @Override
+    public VariantUtil.VariantEntrySet<TrimBlock> getVariantEntrySet() {
+        return variantEntrySet;
+    }
+
+    @Override
+    public VariantUtil.VariantSet getVariantSet() {
+        return variantSet;
     }
 }
