@@ -1,7 +1,6 @@
 package me.sophur.microstorage.client.mixin;
 
 import me.sophur.microstorage.VariantTypes;
-import net.fabricmc.fabric.mixin.itemgroup.client.CreativeInventoryScreenMixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import org.spongepowered.asm.mixin.Mixin;

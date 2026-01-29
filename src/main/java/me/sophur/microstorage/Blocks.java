@@ -1,10 +1,7 @@
 package me.sophur.microstorage;
 
 import me.sophur.microstorage.block.*;
-import me.sophur.microstorage.util.BlockUtil;
-import me.sophur.microstorage.util.DataProvider;
-import me.sophur.microstorage.util.Util;
-import me.sophur.microstorage.util.VariantUtil;
+import me.sophur.microstorage.util.*;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -87,7 +84,7 @@ public class Blocks {
     public static void addRecipe(RuntimeResourcePack pack, RecipeBuilder recipeBuilder, ItemLike itemLike, String suffix) {
         // helper method to add a suffix to avoid duplicate recipe IDs
         if (!suffix.isEmpty()) suffix = "_" + suffix;
-        recipeBuilder.save(pack.getRecipeExporter(), Util.addSuffix(Util.getItemID(itemLike), suffix));
+        recipeBuilder.save(pack.getRecipeExporter(), Util.addSuffix(ItemUtil.getID(itemLike), suffix));
     }
 
     public static void addRecipe(RuntimeResourcePack pack, RecipeBuilder recipeBuilder, ItemLike itemLike) {

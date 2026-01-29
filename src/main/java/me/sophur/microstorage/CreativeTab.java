@@ -17,6 +17,7 @@ import java.util.function.BiConsumer;
 
 import static me.sophur.microstorage.Blocks.*;
 import static me.sophur.microstorage.util.Util.getModID;
+import static me.sophur.microstorage.util.VariantUtil.VariantEntrySet.loopVariantEntrySets;
 
 public class CreativeTab {
     private CreativeTab() {
@@ -36,12 +37,14 @@ public class CreativeTab {
                 if (acceptedItems.add(item)) output.accept(item);
             };
 
-            VariantUtil.VariantEntrySet.loopVariantEntrySets(func, TERMINAL_BLOCKS);
-            VariantUtil.VariantEntrySet.loopVariantEntrySets(func, TRIM_BLOCKS, INTERFACE_BLOCKS);
-            VariantUtil.VariantEntrySet.loopVariantEntrySets(func, STAINED_TRIM_BLOCKS, STAINED_INTERFACE_BLOCKS);
+            // ensure the variants are in order so we list our items in the same order as the vanilla items
+            VariantTypes.sortVariants();
+
+            loopVariantEntrySets(func, TERMINAL_BLOCKS);
+            loopVariantEntrySets(func, TRIM_BLOCKS, INTERFACE_BLOCKS);
+            loopVariantEntrySets(func, STAINED_TRIM_BLOCKS, STAINED_INTERFACE_BLOCKS);
         });
 
-        // FIXME: wood types are not registered in the creative inventory in the correct order
         return Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, getModID("creative_tab"), creativeTabBuilder.build());
     }
 }

@@ -54,7 +54,7 @@ public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUt
 
     @Override
     public @NotNull MutableComponent getName() {
-        return Util.getBlockName(this, variantEntrySet, variantSet);
+        return BlockUtil.getBlockName(this, variantEntrySet, variantSet);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUt
                 .define('R', Items.REDSTONE)
                 .define('H', Items.HOPPER)
                 .define('I', Items.IRON_INGOT)
-                .define('G', Util.getItem(VariantTypes.getGlassID(dye)))
+                .define('G', ItemUtil.getItem(VariantTypes.getGlassID(dye)))
                 .pattern("ICI")
                 .pattern("GRG")
                 .pattern("IHI")
@@ -113,13 +113,13 @@ public class InterfaceBlock extends BaseEntityBlock implements ConnectingBlockUt
         // like stained-glass recipe
         if (dye != null)
             addRecipe(pack,
-                    Util.recipeSurround8(RecipeCategory.REDSTONE, Blocks.INTERFACE_BLOCKS.getOnly(),
-                            Util.getItem(VariantTypes.getDyeID(dye)), this).group("microstorage_interface"),
+                    ItemUtil.recipeSurround8(RecipeCategory.REDSTONE, Blocks.INTERFACE_BLOCKS.getOnly(),
+                            ItemUtil.getItem(VariantTypes.getDyeID(dye)), this).group("microstorage_interface"),
                     this, "glass");
 
         addBlockDrop(pack, this, v -> v.createSingleItemTable(this));
-        addTagElement(BlockTags.MINEABLE_WITH_PICKAXE, Util.getID(this));
-        addTagElement(blockTag, Util.getID(this));
+        addTagElement(BlockTags.MINEABLE_WITH_PICKAXE, BlockUtil.getID(this));
+        addTagElement(blockTag, BlockUtil.getID(this));
     }
 
     // from TransparentBlock

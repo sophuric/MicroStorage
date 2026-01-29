@@ -3,32 +3,22 @@ package me.sophur.microstorage.util;
 import me.sophur.microstorage.blockentity.TerminalBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.recipes.RecipeBuilder;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 import static me.sophur.microstorage.MicroStorage.MOD_ID;
-import static net.minecraft.data.recipes.RecipeProvider.has;
 
 public class Util {
     private Util() {
@@ -51,7 +41,7 @@ public class Util {
 
     private static final HashMap<Object, MutableComponent> nameCache = new HashMap<>();
 
-    private static <T> @NotNull MutableComponent getName(T entry, String type, String translationKey, VariantUtil.VariantEntrySet<T> variantEntrySet, VariantUtil.VariantSet variantSet) {
+    public static <T> @NotNull MutableComponent getName(T entry, String type, String translationKey, VariantUtil.VariantEntrySet<T> variantEntrySet, VariantUtil.VariantSet variantSet) {
         if (!nameCache.containsKey(entry)) {
             MutableComponent fallback = variantEntrySet.getComponent(type, variantSet);
             // get the translation name directly, otherwise fallback to dynamically creating the translation from the variant set
@@ -60,16 +50,6 @@ public class Util {
             nameCache.put(entry, output);
         }
         return nameCache.get(entry).copy();
-    }
-
-    public static <T extends Item> @NotNull MutableComponent getItemName(T item, VariantUtil.VariantEntrySet<T> variantEntrySet, VariantUtil.VariantSet variantSet) {
-        if (Util.getID(item) == null) return Component.empty();
-        return getName(item, "item", item.getDescriptionId(), variantEntrySet, variantSet);
-    }
-
-    public static <T extends Block> @NotNull MutableComponent getBlockName(T block, VariantUtil.VariantEntrySet<T> variantEntrySet, VariantUtil.VariantSet variantSet) {
-        if (Util.getID(block) == null) return Component.empty();
-        return getName(block, "block", block.getDescriptionId(), variantEntrySet, variantSet);
     }
 
     @FunctionalInterface
@@ -108,49 +88,9 @@ public class Util {
         return getIDFromExistingID(ResourceLocation.parse(existingID));
     }
 
-    public static Block getBlock(ResourceLocation id) {
-        return BuiltInRegistries.BLOCK.getOptional(id).orElse(null); // bypasses returning the "default" value, see net.minecraft.core.DefaultedMappedRegistry::get
-    }
-
-    public static Block getBlock(String id) {
-        return getBlock(ResourceLocation.parse(id));
-    }
-
-    public static Item getItem(ResourceLocation id) {
-        return BuiltInRegistries.ITEM.getOptional(id).orElse(null);
-    }
-
-    public static Item getItem(String id) {
-        return getItem(ResourceLocation.parse(id));
-    }
-
-    public static BlockItem getItem(Block block) {
-        Item item = block.asItem();
-        if (item == Items.AIR) return null;
-        if (item instanceof BlockItem blockItem) return blockItem;
-        return null;
-    }
-
-    private static <T> ResourceLocation getID(Registry<T> registry, T entry) {
+    public static <T> ResourceLocation getID(Registry<T> registry, T entry) {
         // DefaultedMappedRegistry doesn't return default for getResourceKey
         return registry.getResourceKey(entry).map(ResourceKey::location).orElse(null);
-    }
-
-    public static ResourceLocation getID(BlockState blockState) {
-        return getID(blockState.getBlock());
-    }
-
-    public static ResourceLocation getID(Block block) {
-        return getID(BuiltInRegistries.BLOCK, block);
-    }
-
-    public static ResourceLocation getID(Item item) {
-        return getID(BuiltInRegistries.ITEM, item);
-    }
-
-    // rename to avoid possible mixup, since Block implements ItemLike
-    public static ResourceLocation getItemID(ItemLike item) {
-        return getID(item.asItem());
     }
 
     public static ResourceLocation addPrefixSuffix(ResourceLocation location, String prefix, String suffix) {
@@ -177,20 +117,12 @@ public class Util {
         return dividend;
     }
 
-    public static RecipeBuilder recipeSurround8(RecipeCategory category, ItemLike input, ItemLike dye, ItemLike output) {
-        // similar to VanillaRecipeProvider::stainedGlassFromGlassAndDye
-        return ShapedRecipeBuilder.shaped(category, output, 8)
-                .define('#', input)
-                .define('X', dye)
-                .pattern("###")
-                .pattern("#X#")
-                .pattern("###")
-                .group("stained_glass")
-                .unlockedBy("has_glass", has(input));
-    }
-
     @SafeVarargs
     public static <T> Collection<T> concat(Collection<T>... collections) {
         return Arrays.stream(collections).collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
+    }
+
+    public static <T> int indexOf(List<T> list, Predicate<T> predicate) {
+        return IntStream.range(0, list.size()).filter(index -> predicate.test(list.get(index))).findFirst().orElse(-1);
     }
 }

@@ -70,12 +70,12 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
 
     public TerminalBlock(VariantUtil.VariantEntrySet<TerminalBlock> variantEntrySet, VariantUtil.VariantSet variantSet) {
         // copy planks block
-        this(BlockBehaviour.Properties.ofFullCopy(Util.getBlock(getPlanksID(variantSet.get(WOOD_TYPE_VARIANT)))), variantEntrySet, variantSet);
+        this(BlockBehaviour.Properties.ofFullCopy(BlockUtil.getBlock(getPlanksID(variantSet.get(WOOD_TYPE_VARIANT)))), variantEntrySet, variantSet);
     }
 
     @Override
     public @NotNull MutableComponent getName() {
-        return Util.getBlockName(this, variantEntrySet, variantSet);
+        return BlockUtil.getBlockName(this, variantEntrySet, variantSet);
     }
 
     @Override
@@ -186,15 +186,15 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
         addRecipe(pack, ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, this)
                 .define('R', Items.REDSTONE)
                 .define('H', Items.HOPPER)
-                .define('P', Util.getItem(getPlanksID(variantSet.get(WOOD_TYPE_VARIANT))))
+                .define('P', ItemUtil.getItem(getPlanksID(variantSet.get(WOOD_TYPE_VARIANT))))
                 .pattern("RHR")
                 .pattern("PPP")
                 .group("microstorage_terminal")
                 .unlockedBy("has_hopper", has(Items.HOPPER)), this);
 
         addBlockDrop(pack, this, v -> v.createSingleItemTable(this));
-        addTagElement(BlockTags.MINEABLE_WITH_AXE, Util.getID(this));
-        addTagElement(blockTag, Util.getID(this));
+        addTagElement(BlockTags.MINEABLE_WITH_AXE, BlockUtil.getID(this));
+        addTagElement(blockTag, BlockUtil.getID(this));
     }
 
     @Override

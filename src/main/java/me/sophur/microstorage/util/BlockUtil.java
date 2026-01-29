@@ -5,11 +5,13 @@ import me.sophur.microstorage.util.VariantUtil.VariantEntrySet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -49,5 +51,30 @@ public class BlockUtil {
         }, variants);
         v.registerWithVariantTypes();
         return v;
+    }
+
+    public static int getNumericID(Block block) {
+        return BuiltInRegistries.BLOCK.getId(block);
+    }
+
+    public static <T extends Block> @NotNull MutableComponent getBlockName(T block, VariantEntrySet<T> variantEntrySet, VariantUtil.VariantSet variantSet) {
+        if (getID(block) == null) return Component.empty();
+        return getName(block, "block", block.getDescriptionId(), variantEntrySet, variantSet);
+    }
+
+    public static Block getBlock(ResourceLocation id) {
+        return BuiltInRegistries.BLOCK.getOptional(id).orElse(null); // bypasses returning the "default" value, see net.minecraft.core.DefaultedMappedRegistry::get
+    }
+
+    public static Block getBlock(String id) {
+        return getBlock(ResourceLocation.parse(id));
+    }
+
+    public static ResourceLocation getID(BlockState blockState) {
+        return getID(blockState.getBlock());
+    }
+
+    public static ResourceLocation getID(Block block) {
+        return Util.getID(BuiltInRegistries.BLOCK, block);
     }
 }

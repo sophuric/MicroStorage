@@ -9,13 +9,11 @@ import net.minecraft.data.recipes.*;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.StainedGlassBlock;
 import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,7 +24,6 @@ import pers.solid.brrp.v1.api.RuntimeResourcePack;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 import static me.sophur.microstorage.Blocks.*;
 import static me.sophur.microstorage.VariantTypes.*;
@@ -65,7 +62,7 @@ public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.C
 
     @Override
     public @NotNull MutableComponent getName() {
-        return Util.getBlockName(this, variantEntrySet, variantSet);
+        return BlockUtil.getBlockName(this, variantEntrySet, variantSet);
     }
 
     @Override
@@ -97,7 +94,7 @@ public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.C
         addRecipe(pack, ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, this, 2)
                 .define('R', Items.REDSTONE)
                 .define('I', Items.IRON_INGOT)
-                .define('G', Util.getItem(VariantTypes.getGlassID(dye)))
+                .define('G', ItemUtil.getItem(VariantTypes.getGlassID(dye)))
                 .pattern("I I")
                 .pattern("GRG")
                 .pattern("I I")
@@ -107,13 +104,13 @@ public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.C
         // like stained-glass recipe
         if (dye != null)
             addRecipe(pack,
-                    Util.recipeSurround8(RecipeCategory.REDSTONE, TRIM_BLOCKS.getOnly(),
-                            Util.getItem(VariantTypes.getDyeID(dye)), this).group("microstorage_trim"),
+                    ItemUtil.recipeSurround8(RecipeCategory.REDSTONE, TRIM_BLOCKS.getOnly(),
+                            ItemUtil.getItem(VariantTypes.getDyeID(dye)), this).group("microstorage_trim"),
                     this, "glass");
 
         addBlockDrop(pack, this, v -> v.createSingleItemTable(this));
-        addTagElement(BlockTags.MINEABLE_WITH_PICKAXE, Util.getID(this));
-        addTagElement(blockTag, Util.getID(this));
+        addTagElement(BlockTags.MINEABLE_WITH_PICKAXE, BlockUtil.getID(this));
+        addTagElement(blockTag, BlockUtil.getID(this));
     }
 
     @Override
@@ -136,7 +133,7 @@ public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.C
         }
         // prevent rendering side if it is the same colour glass block
         var dye = block.getVariantSet().getOrNull(DYE_COLOR_VARIANT);
-        return Objects.equals(adjacentBlock, Util.getBlock(VariantTypes.getGlassID(dye)));
+        return Objects.equals(adjacentBlock, BlockUtil.getBlock(VariantTypes.getGlassID(dye)));
     }
 
     public static boolean skipRenderingGlass(BlockState state, BlockState adjacentState, Direction direction) {

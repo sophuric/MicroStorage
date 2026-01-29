@@ -19,6 +19,7 @@ public class VariantUtil {
 
     public interface VariantSupplier<T> {
         VariantEntrySet<T> getVariantEntrySet();
+
         VariantSet getVariantSet();
     }
 
@@ -116,10 +117,11 @@ public class VariantUtil {
 
         private final Function<T, String> getNameInternal;
         private final Function<T, Ingredient> getIngredientInternal;
+        private final Comparator<Map.Entry<T, Variant<T>>> sortInternal;
 
         private final Map<Variant<T>, String> nameCache = new HashMap<>();
         private final Map<Variant<T>, Ingredient> ingredientCache = new HashMap<>();
-        private final Map<T, Variant<T>> variantsCache = new HashMap<>();
+        private LinkedHashMap<T, Variant<T>> variantsCache = new LinkedHashMap<>();
 
         public VariantType(String name, Class<T> variantClass, Function<T, String> getName,
                            T[] variants, Function<T, Ingredient> getIngredient) {
@@ -127,11 +129,24 @@ public class VariantUtil {
         }
 
         public VariantType(String name, Class<T> variantClass, Function<T, String> getName,
-                           List<T> variants, Function<T, Ingredient> getIngredient) {
+                           T[] variants, Function<T, Ingredient> getIngredient, Comparator<Variant<T>> sort) {
+            this(name, variantClass, getName, Arrays.stream(variants).toList(), getIngredient, sort);
+        }
+
+        public VariantType(String name, Class<T> variantClass, Function<T, String> getName,
+                           Collection<T> variants, Function<T, Ingredient> getIngredient) {
+            this(name, variantClass, getName, variants, getIngredient, null);
+        }
+
+        public VariantType(String name, Class<T> variantClass, Function<T, String> getName,
+                           Collection<T> variants, Function<T, Ingredient> getIngredient, Comparator<Variant<T>> sort) {
             this.name = name;
             this.variantClass = variantClass;
             getNameInternal = getName;
             getIngredientInternal = getIngredient;
+            if (sort != null)
+                sortInternal = (a, b) -> sort.compare(a.getValue(), b.getValue());
+            else sortInternal = null;
 
             addNew(variants);
         }
@@ -140,16 +155,29 @@ public class VariantUtil {
             this(variantType.name, variantType.variantClass, variantType.getNameInternal, variantType.getActualVariants(), variantType.getIngredientInternal);
         }
 
+        public void sort() {
+            if (sortInternal == null) return;
+            // sort variants
+            variantsCache = variantsCache.sequencedEntrySet().stream().sorted(sortInternal)
+                    .collect(LinkedHashMap::new, (map, entry) ->
+                            map.put(entry.getKey(), entry.getValue()), LinkedHashMap::putAll);
+        }
+
         private void addNew(Collection<T> variants) {
             variants.forEach(variant -> {
                 if (variantsCache.containsKey(variant)) return;
                 variantsCache.put(variant, new Variant<>(this, variant));
             });
+            sort();
         }
 
         public Variant<T> get(T t) {
             if (!variantsCache.containsKey(t)) throw new NoSuchElementException("This variant does not contain " + t);
             return variantsCache.get(t);
+        }
+
+        public boolean has(T t) {
+            return variantsCache.containsKey(t);
         }
 
         public String getName(T t) {
@@ -225,7 +253,7 @@ public class VariantUtil {
 
         private final List<VariantType<?>> variantTypes;
         public final ResourceLocation baseID;
-        private final HashMap<VariantSet, T> entries;
+        private final Map<VariantSet, T> entries;
         private final BiFunction<VariantEntrySet<T>, VariantSet, T> populateFunction;
 
         public List<VariantType<?>> getVariantTypes() {
@@ -237,7 +265,7 @@ public class VariantUtil {
             if (Util.hasDuplicates(variantTypes))
                 throw new IllegalArgumentException("Cannot have multiple of the same variant");
             this.variantTypes = List.copyOf(variantTypes);
-            entries = new HashMap<>();
+            entries = new LinkedHashMap<>();
             this.populateFunction = populateFunction;
 
             populateEntries(null);
