@@ -4,28 +4,48 @@
 	"parent": "block/block",
 	"textures": {
 		"1": "#planks",
-		"2": "microstorage:block/terminal",
 		"particle": "#planks"
 	},
 	"elements": [
 		{
-			"name": "tray",
+			"name": "bottom",
 			"from": [1, 1, 2],
-			"to": [11, 7, 3],
+			"to": [11, 5, 3],
 			"faces": {
-				"east": {"uv": [11, 9, 12, 15], "texture": "#1"},
-				"south": {"uv": [1, 9, 11, 15], "texture": "#1"},
-				"west": {"uv": [0, 9, 1, 15], "texture": "#1"},
-				"up": {"uv": [1, 8, 11, 9], "rotation": 180, "texture": "#1"},
+				"east": {"uv": [11, 11, 12, 15], "texture": "#1"},
+				"south": {"uv": [1, 11, 11, 15], "texture": "#1"},
+				"west": {"uv": [0, 11, 1, 15], "texture": "#1"},
 				"down": {"uv": [1, 15, 11, 16], "texture": "#1"}
 			}
 		},
 		{
-			"name": "tray back dim",
-			"from": [1, 1, 1],
-			"to": [11, 7, 1],
+			"name": "right",
+			"from": [10, 5, 2],
+			"to": [11, 6, 3],
+			"rotation": {"angle": 0, "axis": "y", "origin": [9, 0, 0]},
 			"faces": {
-				"south": {"uv": [0, 7, 1, 8], "texture": "#2"}
+				"east": {"uv": [11, 10, 12, 11], "texture": "#1"},
+				"south": {"uv": [10, 10, 11, 11], "texture": "#1"}
+			}
+		},
+		{
+			"name": "left",
+			"from": [1, 5, 2],
+			"to": [2, 6, 3],
+			"faces": {
+				"south": {"uv": [1, 10, 2, 11], "texture": "#1"},
+				"west": {"uv": [0, 10, 1, 11], "texture": "#1"}
+			}
+		},
+		{
+			"name": "top",
+			"from": [1, 6, 2],
+			"to": [11, 7, 3],
+			"faces": {
+				"east": {"uv": [11, 9, 12, 10], "texture": "#1"},
+				"south": {"uv": [1, 9, 11, 10], "texture": "#1"},
+				"west": {"uv": [0, 9, 1, 10], "texture": "#1"},
+				"up": {"uv": [1, 8, 11, 9], "rotation": 180, "texture": "#1"}
 			}
 		}
 	],
@@ -76,7 +96,14 @@
 			"name": "close planks",
 			"origin": [8, 8, 8],
 			"color": 7,
-			"children": [0]
+			"children": [
+				{
+					"name": "tray",
+					"origin": [8, 8, 8],
+					"color": 0,
+					"children": [0, 1, 2, 3]
+				}
+			]
 		}
 	]
 }

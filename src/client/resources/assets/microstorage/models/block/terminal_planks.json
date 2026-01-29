@@ -4,7 +4,6 @@
 	"parent": "block/block",
 	"textures": {
 		"1": "#planks",
-		"2": "microstorage:block/terminal",
 		"particle": "#planks"
 	},
 	"elements": [
@@ -104,14 +103,6 @@
 			"rotation": {"angle": 0, "axis": "y", "origin": [12, -9, 0]},
 			"faces": {
 				"north": {"uv": [1, 9, 4, 15], "texture": "#1", "cullface": "north"}
-			}
-		},
-		{
-			"name": "tray back dim",
-			"from": [1, 1, 1],
-			"to": [11, 7, 1],
-			"faces": {
-				"south": {"uv": [0, 7, 1, 8], "texture": "#2"}
 			}
 		}
 	],
