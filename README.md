@@ -12,10 +12,10 @@
 <!-- modrinth_exclude.start -->
 <div align="center">
 <!-- modrinth_exclude.end -->
-<a href="https://github.com/sophuric/MicroStorage/blob/main/src/main/resources/assets/microstorage/terminal_close.png" title="Terminal block (close)"><img alt="Terminal block (close)" width="96px" height="96px" src="https://github.com/sophuric/MicroStorage/raw/main/src/main/resources/assets/microstorage/terminal_close.png"/></a>
-<a href="https://github.com/sophuric/MicroStorage/blob/main/src/main/resources/assets/microstorage/terminal_open.png" title="Terminal block (open)"><img alt="Terminal block (open)" width="96px" height="96px" src="https://github.com/sophuric/MicroStorage/raw/main/src/main/resources/assets/microstorage/terminal_open.png"/></a>
-<a href="https://github.com/sophuric/MicroStorage/blob/main/src/main/resources/assets/microstorage/interface.png" title="Interface block"><img alt="Interface block" width="96px" height="96px" src="https://github.com/sophuric/MicroStorage/raw/main/src/main/resources/assets/microstorage/interface.png"/></a>
-<a href="https://github.com/sophuric/MicroStorage/blob/main/src/main/resources/assets/microstorage/trim.png" title="Trim block"><img alt="Trim block" width="96px" height="96px" src="https://github.com/sophuric/MicroStorage/raw/main/src/main/resources/assets/microstorage/trim.png"/></a>
+<a href="https://github.com/sophuric/MicroStorage/blob/main/assets/terminal_close.png" title="Terminal block (close)"><img alt="Terminal block (close)" width="96px" height="96px" src="https://github.com/sophuric/MicroStorage/raw/main/assets/terminal_close.png"/></a>
+<a href="https://github.com/sophuric/MicroStorage/blob/main/assets/terminal_open.png" title="Terminal block (open)"><img alt="Terminal block (open)" width="96px" height="96px" src="https://github.com/sophuric/MicroStorage/raw/main/assets/terminal_open.png"/></a>
+<a href="https://github.com/sophuric/MicroStorage/blob/main/assets/interface.png" title="Interface block"><img alt="Interface block" width="96px" height="96px" src="https://github.com/sophuric/MicroStorage/raw/main/assets/interface.png"/></a>
+<a href="https://github.com/sophuric/MicroStorage/blob/main/assets/trim.png" title="Trim block"><img alt="Trim block" width="96px" height="96px" src="https://github.com/sophuric/MicroStorage/raw/main/assets/trim.png"/></a>
 <!-- modrinth_exclude.start -->
 </div>
 <!-- modrinth_exclude.end -->
