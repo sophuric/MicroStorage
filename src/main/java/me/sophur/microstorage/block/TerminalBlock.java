@@ -9,8 +9,10 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Player;
@@ -124,7 +126,7 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
             Direction.SOUTH, Shapes.box(0, 0, 1 - THICKNESS, 1, 1, 1)
     ));
 
-    private static Direction getConnectedDirection(BlockState blockState) {
+    public static Direction getDirection(BlockState blockState) {
         // from net.minecraft.world.level.block.FaceAttachedHorizontalDirectionalBlock::getConnectedDirection
         return switch (blockState.getValue(FACE)) {
             case CEILING -> Direction.UP;
@@ -135,11 +137,11 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
 
     @Override
     protected @NotNull VoxelShape getShape(BlockState blockState, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE_MAP.get(getConnectedDirection(blockState));
+        return SHAPE_MAP.get(getDirection(blockState));
     }
 
     public static BaseContainerBlockEntity getContainer(BlockState ownBlockState, BlockGetter level, BlockPos ownBlockPos) {
-        BlockPos containerPos = ownBlockPos.offset(getConnectedDirection(ownBlockState).getNormal());
+        BlockPos containerPos = ownBlockPos.offset(getDirection(ownBlockState).getNormal());
         return Util.getContainer(level, containerPos);
     }
 
@@ -205,5 +207,12 @@ public class TerminalBlock extends BaseEntityBlock implements SimpleWaterloggedB
     @Override
     public VariantUtil.VariantSet getVariantSet() {
         return variantSet;
+    }
+
+    @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (level.getBlockEntity(pos) instanceof TerminalBlockEntity terminalBlockEntity) {
+            terminalBlockEntity.tick();
+        }
     }
 }

@@ -1,11 +1,14 @@
 package me.sophur.microstorage.client;
 
+import me.sophur.microstorage.BlockEntities;
 import me.sophur.microstorage.Blocks;
 import me.sophur.microstorage.block.InterfaceBlock;
 import me.sophur.microstorage.block.TrimBlock;
 import me.sophur.microstorage.client.block.TerminalClientBlock;
 import me.sophur.microstorage.client.block.TrimInterfaceClientBlock;
+import me.sophur.microstorage.client.screen.TerminalScreen;
 import net.fabricmc.api.ClientModInitializer;
+import net.minecraft.client.gui.screens.MenuScreens;
 import pers.solid.brrp.v1.api.RuntimeResourcePack;
 import pers.solid.brrp.v1.fabric.api.RRPCallback;
 
@@ -31,5 +34,7 @@ public class MicroStorageClient implements ClientModInitializer {
                 resources.add(pack);
             }
         });
+
+        MenuScreens.register(BlockEntities.TERMINAL_MENU_TYPE, TerminalScreen::new);
     }
 }

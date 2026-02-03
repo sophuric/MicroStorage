@@ -9,6 +9,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(WoodType.class)
 public class WoodTypeMixin {
+    private WoodTypeMixin() {
+    }
+
     @Inject(method = "register", at = @At("RETURN"))
     private static void injectRegister(WoodType woodType, CallbackInfoReturnable<WoodType> cir) {
         if (VariantTypes.WOOD_TYPE_VARIANT != null) VariantTypes.WOOD_TYPE_VARIANT.addMore(woodType);

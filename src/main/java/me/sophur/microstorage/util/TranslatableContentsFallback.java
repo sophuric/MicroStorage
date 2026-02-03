@@ -34,7 +34,7 @@ public class TranslatableContentsFallback extends TranslatableContents {
                     .apply(instance, (key, fallback, args) ->
                             new TranslatableContentsFallback(key, fallback.orElse(null), adjustArgs(args)))
     );
-    public static final ComponentContents.Type<TranslatableContentsFallback> TYPE = new ComponentContents.Type<>(CODEC, "translatable");
+    public static final ComponentContents.Type<TranslatableContentsFallback> TYPE = new ComponentContents.Type<>(CODEC, "translatable_fallback");
 
     @Nullable
     private final Component fallback;
@@ -88,7 +88,6 @@ public class TranslatableContentsFallback extends TranslatableContents {
         return Optional.empty();
     }
 
-
     @Override
     public @NotNull MutableComponent resolve(@Nullable CommandSourceStack nbtPathPattern, @Nullable Entity entity, int recursionDepth) throws CommandSyntaxException {
         Object[] objects = new Object[this.args.length];
@@ -103,6 +102,11 @@ public class TranslatableContentsFallback extends TranslatableContents {
         }
 
         return MutableComponent.create(new TranslatableContentsFallback(this.key, this.fallback, objects));
+    }
+
+    @Override
+    public @NotNull Type<TranslatableContentsFallback> type() {
+        return TYPE;
     }
 
     @Override

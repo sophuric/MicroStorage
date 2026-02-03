@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static me.sophur.microstorage.MicroStorage.MOD_ID;
 
@@ -42,7 +43,7 @@ public class Util {
     private static final HashMap<Object, MutableComponent> nameCache = new HashMap<>();
 
     public static <T> @NotNull MutableComponent getName(T entry, String type, String translationKey, VariantUtil.VariantEntrySet<T> variantEntrySet, VariantUtil.VariantSet variantSet) {
-        if (!nameCache.containsKey(entry)) {
+        if (!nameCache.containsKey(entry)||true) {
             MutableComponent fallback = variantEntrySet.getComponent(type, variantSet);
             // get the translation name directly, otherwise fallback to dynamically creating the translation from the variant set
             MutableComponent output = MutableComponent.create(new TranslatableContentsFallback(
@@ -117,9 +118,18 @@ public class Util {
         return dividend;
     }
 
+    private static <T> Collection<T> concat(Stream<Collection<T>> collectionStream) {
+        return collectionStream.collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
+    }
+
     @SafeVarargs
     public static <T> Collection<T> concat(Collection<T>... collections) {
-        return Arrays.stream(collections).collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
+        return concat(Arrays.stream(collections));
+    }
+
+    @SafeVarargs
+    public static <T> T[] concat(Class<T> clazz, T[]... arrays) {
+        return toArray(clazz, concat(Arrays.stream(arrays).map(e -> Arrays.stream(e).toList())));
     }
 
     public static <T> int indexOf(List<T> list, Predicate<T> predicate) {

@@ -18,6 +18,9 @@ import java.util.Objects;
 
 @Mixin(HalfTransparentBlock.class)
 public class HalfTransparentBlockMixin {
+    private HalfTransparentBlockMixin() {
+    }
+
     // this is to prevent rendering sides of vanilla glass that are connected to a trim/interface block
     @Inject(method = "skipRendering(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/Direction;)Z",
             at = @At("HEAD"), cancellable = true)

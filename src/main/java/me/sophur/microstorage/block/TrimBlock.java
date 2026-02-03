@@ -30,7 +30,6 @@ import static me.sophur.microstorage.VariantTypes.*;
 import static me.sophur.microstorage.util.Util.getModID;
 import static net.minecraft.data.recipes.RecipeProvider.has;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class TrimBlock extends TransparentBlock implements ConnectingBlockUtil.ConnectingBlock, DataProvider<TrimBlock>, VariantUtil.VariantSupplier<TrimBlock> {
     // mainly copy of glass block
     public static final BlockBehaviour.Properties PROPERTIES =

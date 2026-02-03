@@ -1,4 +1,5 @@
 classTweaker v1 named
+
 accessible field net/minecraft/network/chat/contents/TranslatableContents ARG_CODEC Lcom/mojang/serialization/Codec;
 accessible method net/minecraft/network/chat/contents/TranslatableContents adjustArgs ([Ljava/lang/Object;)Ljava/util/Optional;
 accessible method net/minecraft/network/chat/contents/TranslatableContents adjustArgs (Ljava/util/Optional;)[Ljava/lang/Object;
@@ -7,3 +8,8 @@ accessible method net/minecraft/network/chat/contents/TranslatableContents decom
 accessible field net/minecraft/network/chat/contents/TranslatableContents decomposedParts Ljava/util/List;
 accessible field net/minecraft/network/chat/contents/TranslatableContents key Ljava/lang/String;
 accessible field net/minecraft/network/chat/contents/TranslatableContents args [Ljava/lang/Object;
+
+accessible method net/minecraft/world/level/block/entity/BaseContainerBlockEntity getItems ()Lnet/minecraft/core/NonNullList;
+accessible method net/minecraft/world/level/block/entity/BaseContainerBlockEntity setItems (Lnet/minecraft/core/NonNullList;)V
+accessible field net/minecraft/world/level/block/entity/BaseContainerBlockEntity name Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/world/level/block/entity/BaseContainerBlockEntity lockKey Lnet/minecraft/world/LockCode;

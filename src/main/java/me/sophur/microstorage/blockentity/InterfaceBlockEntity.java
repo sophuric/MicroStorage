@@ -23,13 +23,12 @@ public class InterfaceBlockEntity extends BaseContainerBlockEntity {
     }
 
     @Override
-    protected @NotNull NonNullList<ItemStack> getItems() {
-        // TODO
+    public @NotNull NonNullList<ItemStack> getItems() {
         return NonNullList.create();
     }
 
     @Override
-    protected void setItems(NonNullList<ItemStack> items) {
+    public void setItems(NonNullList<ItemStack> items) {
     }
 
     @Override
